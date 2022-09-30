@@ -4,8 +4,8 @@ export function getServerSideProps() {
   return {
     props: {
       initialState: {
-        value1: 12,
-        value2: 14,
+        value1: 0,
+        value2: 0,
       },
     },
   };
