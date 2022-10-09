@@ -3,7 +3,7 @@ echo 'Checking styling and types before committing...'
 
 # Check Prettier standards
 {
-  yarn run check-format ||
+  yarn check-format ||
   (
     echo 'Prettier Check Failed. Run `npm run format`, stage the changes, and try again. ❌'
     false
@@ -12,7 +12,7 @@ echo 'Checking styling and types before committing...'
 
 # Check ESLint Standards
 {
-  yarn run check-lint ||
+  yarn check-lint ||
   (
     echo 'ESLint Check Failed. Make the required changes listed above, stage the changes, and try again. ❌'
     false
@@ -21,7 +21,7 @@ echo 'Checking styling and types before committing...'
 
 # Check tsconfig standards
 {
-  npm run check-types ||
+  yarn check-types ||
   (
     echo 'Type check failed. Make the required changes listed above, stage the changes, and try again. ❌'
     false
