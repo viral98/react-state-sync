@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+echo 'Checking styling and types before committing...'
+
+# Check Prettier standards
+{
+  npm run check-format ||
+  (
+    echo 'Prettier Check Failed. Run `npm run format`, stage the changes, and try again. ❌'
+    false
+  )
+} &
+
+# Check ESLint Standards
+{
+  npm run check-lint ||
+  (
+    echo 'ESLint Check Failed. Make the required changes listed above, stage the changes, and try again. ❌'
+    false
+  )
+} &
+
+# Check tsconfig standards
+{
+  npm run check-types ||
+  (
+    echo 'Type check failed. Make the required changes listed above, stage the changes, and try again. ❌'
+    false
+  )
+} &
+
+# Wait for checks to complete and block commit if there are failures
+
+FAIL=0
+for job in `jobs -p`; do
+  wait $job || let 'FAIL+=1'
+done
+
+if [ $FAIL == '0' ]; then
+  echo 'All checks passed. ✔️'
+else
+  false
+fi

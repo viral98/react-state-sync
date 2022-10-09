@@ -1,4 +1,3 @@
-
 export type FilterOperator = 'eq' | 'in' | 'nin' | 'lt' | 'gt' | 'lteq' | 'gteq' | 'ne'
 
 export interface ApiResponseMeta {
