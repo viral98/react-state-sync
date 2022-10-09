@@ -9,8 +9,8 @@
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
-    "check-lint": "eslint . --ext ts --ext tsx --ext js --max-warnings 0",
-    "format": "prettier --write ."
+    "check-lint": "eslint \"./src/**/*.{js,ts,tsx}\" --max-warnings 0",
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "axios": "^1.1.2",

@@ -19,15 +19,6 @@ echo 'Checking styling and types before committing...'
   )
 } &
 
-# Check tsconfig standards
-{
-  yarn check-types ||
-  (
-    echo 'Type check failed. Make the required changes listed above, stage the changes, and try again. ❌'
-    false
-  )
-} &
-
 # Wait for checks to complete and block commit if there are failures
 
 FAIL=0
