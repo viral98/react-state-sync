@@ -11,4 +11,5 @@ export default store;
 
 const useStore = (selector: (state: ValuesStore) => number) => {};
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 useStore(() => 2);
