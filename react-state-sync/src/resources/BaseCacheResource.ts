@@ -7,7 +7,7 @@ export abstract class BaseCacheResource<T> {
    throw new Error("Not implemented");
   }
 
-  public async set(): Promise<void> {
+  public async set(query: string, data: T): Promise<void> {
     throw new Error("Not implemented");
   }
   
