@@ -16,9 +16,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
+          cache: 'yarn'
+      - run: yarn ci
+      - run: yarn build
 
   test:
     runs-on: ubuntu-latest
@@ -29,9 +29,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run test:ci
+          cache: 'yarn'
+      - run: yarn ci
+      - run: yarn test:ci
 
   formatting:
     runs-on: ubuntu-latest
@@ -42,9 +42,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run check-format
+          cache: 'yarn'
+      - run: yarn ci
+      - run: yarn check-format
 
   linting:
     runs-on: ubuntu-latest
@@ -55,9 +55,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run check-lint
+          cache: 'yarn'
+      - run: yarn ci
+      - run: yarn check-lint
 
   types:
     runs-on: ubuntu-latest
@@ -68,6 +68,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run check-types
+          cache: 'yarn'
+      - run: yarn ci
+      - run: yarn check-types
