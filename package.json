@@ -13,6 +13,7 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
     "axios": "^1.1.2",
     "eslint-config-prettier": "^8.5.0",
     "next": "12.2.5",
