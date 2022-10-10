@@ -8,6 +8,7 @@ export default function createStore<Shape>(initialState: Shape) {
     listeners.add(listener)
     return () => listeners.delete(listener)
   }
+
   return {
     getState: () => currentState,
     setState: (newState: Shape) => {

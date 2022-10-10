@@ -6,6 +6,8 @@ export class BaseCacheResource<T> {
   }
 
   public async set(query: string, data: T): Promise<void> {
+    console.error(query, data)
+
     throw new Error('Not implemented')
   }
 }
