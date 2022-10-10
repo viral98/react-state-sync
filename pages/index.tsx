@@ -21,6 +21,7 @@ const IncrementValue = ({ item }: { item: keyof ValuesStore }) => (
   <button
     onClick={() => {
       const state = store.getState()
+
       store.setState({
         ...state,
         [item]: state[item] + 1
