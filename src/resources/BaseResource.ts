@@ -36,4 +36,8 @@ export abstract class BaseResource<T> {
 
     throw new Error('Not implemented')
   }
+
+  protected abstract getPath(): string
+
+  protected abstract getName(): string
 }
