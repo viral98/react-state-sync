@@ -2,10 +2,10 @@ import createStore from '../createStore'
 import { ApiQueryParams } from '../types/api'
 
 export abstract class BaseResource<T> {
-  constructor() {
-    const store = createStore({} as T)
+  private store
 
-    console.log(store)
+  constructor() {
+    this.store = createStore({} as T)
   }
   public getAll = async (params?: ApiQueryParams) => {
     console.error(params)
