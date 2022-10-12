@@ -1,16 +1,22 @@
 import createStore from '../createStore'
-import { ApiQueryParams } from '../types/api'
 
 export abstract class BaseResource<T> {
   private store
 
   constructor() {
-    this.store = createStore({} as T)
+    this.store = createStore([] as T[])
   }
-  public getAll = async (params?: ApiQueryParams) => {
-    console.error(params)
 
-    throw new Error('Not implemented')
+  protected abstract getPath(): string
+
+  protected abstract getName(): string
+
+  public getAll = async () => {
+    const resp = await fetch(process.env.NEXT_PUBLIC_API_URL + this.getPath())
+
+    this.store.setState((await resp.json()) as unknown as T[])
+
+    return this.store.getState()
   }
 
   public post = async (data: Partial<T>) => {
@@ -36,8 +42,4 @@ export abstract class BaseResource<T> {
 
     throw new Error('Not implemented')
   }
-
-  protected abstract getPath(): string
-
-  protected abstract getName(): string
 }

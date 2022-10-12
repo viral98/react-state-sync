@@ -1,43 +1,18 @@
-import { useEffect } from 'react'
-import store, { type ValuesStore } from '../src/store'
+import { useEffect, useState } from 'react'
+import { BookResource } from '../src/resources/BookResource'
 import { Book } from '../src/types/books'
 
-const DisplayValue = () => {
-  const val = store.useStore((state) => state)
-
-  return (
-    <div>
-      <h2>Books</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-          </tr>
-        </thead>
-        <tbody>
-          {val?.books.map((book: Book) => (
-            <tr key={book.id}>
-              <td>{book.title}</td>
-              <td>{book.author}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-function App({ initialState }: { initialState: ValuesStore }) {
-  store.serverInitialize(initialState)
+function App() {
+  const [books, setBooks] = useState([] as unknown as Book[])
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
-    ;(async () => {
-      const books = await fetch(process.env.NEXT_PUBLIC_API_URL + 'books')
+    const fetchBooks = async () => {
+      const books = await new BookResource().getAll()
 
-      store.setState({ books: (await books.json()) as unknown as Book[] })
-    })()
+      setBooks(books)
+    }
+
+    fetchBooks()
   }, [])
 
   return (
@@ -48,7 +23,25 @@ function App({ initialState }: { initialState: ValuesStore }) {
         maxWidth: 600,
         gap: '2rem'
       }}>
-      <DisplayValue />
+      <div>
+        <h2>Books</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            {books.map((book: Book) => (
+              <tr key={book.id}>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
