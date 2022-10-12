@@ -34,7 +34,6 @@ function App({ initialState }: { initialState: ValuesStore }) {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(async () => {
-      console.log(process.env.NEXT_PUBLIC_API_URL)
       const books = await fetch(process.env.NEXT_PUBLIC_API_URL + 'books')
 
       store.setState({ books: (await books.json()) as unknown as Book[] })
