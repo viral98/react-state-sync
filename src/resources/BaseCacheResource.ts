@@ -1,3 +1,5 @@
+import * as md5 from 'md5'
+
 interface BaseCacheResourceInterface<T> {
   timeStamp: string
   value: T
@@ -29,8 +31,8 @@ export abstract class BaseCacheResource<T> {
   }
 
   private hash(query: string): string {
-    const md5 = require('md5')
     const hashedQuery = md5(query)
+
     return hashedQuery
   }
 
