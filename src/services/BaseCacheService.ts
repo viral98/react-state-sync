@@ -1,9 +1,7 @@
-import { BaseCacheResource } from '../resources/BaseCacheResource'
-
 export abstract class BaseCacheService<T> {
   private ttl: number
   private data = null
-  private updatedAt: number = 0
+  private updatedAt = 0
   constructor() {
     this.ttl = 3_600_000
   }
@@ -15,6 +13,7 @@ export abstract class BaseCacheService<T> {
   public async get(id: string) {
     const hasData = Boolean(this.data)
     const isFresh = Date.now() - this.updatedAt < this.ttl
+
     if (isFresh) {
       return this.data
     }
