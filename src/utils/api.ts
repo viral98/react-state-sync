@@ -1,7 +1,20 @@
-import axios from '../../node_modules/axios/index'
+interface FetchProps {
+  url: string
+  method: "GET" | "POST" | "DELETE" | "PATCH"
+  header?:{
+    tokenKey: string
+    token: string
+  }
+}
 
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL
-})
+const api = async ({header, url, method}:FetchProps) => {
+
+  //TODO: Generate options object based on whether headers are passed
+    const response = await fetch(url, {
+        method: method,
+    });
+
+    return response;
+};
 
 export default api
