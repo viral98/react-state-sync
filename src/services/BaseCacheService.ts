@@ -1,27 +1,24 @@
 import { BaseCacheResource } from '../resources/BaseCacheResource'
-const ttl: number = 3_600_000 // 1 hour
+
 export abstract class BaseCacheService<T> {
-
-
-  private cacheResource
+  private ttl: number
   private data = null
   private updatedAt: number = 0
   constructor() {
-    this.cacheResource = new BaseCacheResource<T>()
+    this.ttl = 3_600_000
   }
 
   public async getAll() {
-
     throw new Error('Not implemented')
   }
 
   public async get(id: string) {
     const hasData = Boolean(this.data)
-    const isFresh = Date.now() - this.updatedAt < ttl
+    const isFresh = Date.now() - this.updatedAt < this.ttl
     if (isFresh) {
-    return this.data
+      return this.data
     }
-//The data is fresh
+    //The data is fresh
     // const deferred = TODO: fetch and store data.then((result: Data) => {
     // TODO: hashing logic
     // updatedAt = Date.now()
@@ -29,15 +26,15 @@ export abstract class BaseCacheService<T> {
     //return data
     //})
 
-  //  The data is stale
+    //  The data is stale
 
-  if (hasData) {
-    return this.data
-  }
+    if (hasData) {
+      return this.data
+    }
 
-  // The data is not cached
+    // The data is not cached
 
-  //return this.deferred
+    //return this.deferred
     console.error(id)
 
     throw new Error('Not implemented')
