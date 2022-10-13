@@ -11,6 +11,7 @@ export function reduce<T extends any[]>(state: T, action: BaseActions<T>) : T {
         case actionTypes.POST: {
             const newState = {...state};
             newState.push(action.payload);
+
             return newState;
         }
         case actionTypes.DELETE:
