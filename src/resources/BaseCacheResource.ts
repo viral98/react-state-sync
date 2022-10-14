@@ -1,7 +1,8 @@
 import md5 from 'md5'
+import { ApiQueryParams } from '../types/api'
 
 interface BaseCacheResourceInterface<T> {
-  timeStamp: string
+  timeStamp: Date
   value: T
 }
 export abstract class BaseCacheResource<T> {
@@ -15,23 +16,23 @@ export abstract class BaseCacheResource<T> {
     >
   }
 
-  public get(query: string): T | null {
-    return this.cache?.get(this.hash(query))?.value ?? null
+  public get(query: ApiQueryParams): BaseCacheResourceInterface<T> | null {
+    return this.cache?.get(this.hash(query)) ?? null
   }
 
-  public async set(query: string, data: T): Promise<void> {
+  public async set(query: ApiQueryParams, data: T): Promise<void> {
     const key = this.hash(query)
 
     const value: BaseCacheResourceInterface<T> = {
-      timeStamp: new Date().toUTCString(),
+      timeStamp: new Date(),
       value: data
     }
 
     this.cache?.set(key, value)
   }
 
-  private hash(query: string): string {
-    const hashedQuery = md5(query)
+  private hash(query: ApiQueryParams): string {
+    const hashedQuery = md5(JSON.stringify(query))
 
     return hashedQuery
   }

@@ -1,23 +1,35 @@
-export abstract class BaseCacheService<T> {
+import { BaseCacheResource } from '../resources/BaseCacheResource'
+import { ApiQueryParams } from '../types/api'
+
+export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   private ttl: number
-  private data = null
-  private updatedAt = 0
+  private updatedAt: number
+
   constructor() {
+    super()
+
     this.ttl = 3_600_000
+    this.updatedAt = 0
   }
 
   public async getAll() {
     throw new Error('Not implemented')
   }
 
-  public async get(id: string) {
-    const hasData = Boolean(this.data)
-    const isFresh = Date.now() - this.updatedAt < this.ttl
+  public async getCachedValue(param: ApiQueryParams): Promise<T | null> {
+    const data = this.get(param)
+    const hasData = Boolean(data)
 
-    if (isFresh) {
-      return this.data
-    }
+    const timeStamp = data?.timeStamp
+
+    //TODO: Check how to perform date calculations without using moment.js
+    const isFresh = data ? new Date().getTime() - timeStamp.getTime() < this.ttl : false
+
     //The data is fresh
+    if (isFresh && data) {
+      return data?.value
+    }
+    //The data is stale
     // const deferred = TODO: fetch and store data.then((result: Data) => {
     // TODO: hashing logic
     // updatedAt = Date.now()
@@ -28,15 +40,14 @@ export abstract class BaseCacheService<T> {
     //  The data is stale
 
     if (hasData) {
-      return this.data
+      return null
+    } else {
+      return null
     }
 
     // The data is not cached
 
     //return this.deferred
-    console.error(id)
-
-    throw new Error('Not implemented')
   }
 
   public async update(id: string, data: Partial<T>) {
