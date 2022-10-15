@@ -35,20 +35,14 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
       return data?.value
     }
 
+    const deferred = await fetch(process.env.NEXT_PUBLIC_API_URL)
+
     //The data is stale
     //const deferred = TODO: fetch and store data.then((result: Data) => {
     // TODO: hashing logic
     // data = result
     //return this.set(param)
     //})
-
-    //  The data is stale
-
-    if (hasData) {
-      return null
-    } else {
-      return null
-    }
 
     // The data is not cached
 
@@ -68,7 +62,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async create(data: Partial<T>) {
-    console.error(data)
+    const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL)
 
     throw new Error('Not implemented')
   }
