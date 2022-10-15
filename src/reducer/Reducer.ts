@@ -1,12 +1,15 @@
-import { actionTypes, BaseActions } from '../actions/BaseActions'
-import { StoreState } from '../createStore'
+import { ActionTypes, BaseActions } from '../actions/BaseActions'
+import { DefaultObject, StoreState } from '../createStore'
 
-export function reducer<Shape>(
+export function reducer<Shape extends DefaultObject>(
   state: StoreState<Shape>[],
   action: BaseActions<Shape>
 ): StoreState<Shape>[] {
-  switch (action.actionType) {
-    case actionTypes.UPDATE:
+  switch (action.type) {
+    case ActionTypes.GET_ALL:
+      return action.payload
+
+    case ActionTypes.UPDATE:
       return state.map((stateItem: StoreState<Shape>) => {
         if (stateItem.id === action.payload.id) {
           return action.payload
@@ -14,9 +17,8 @@ export function reducer<Shape>(
           return stateItem
         }
       })
-      break
 
-    case actionTypes.POST: {
+    case ActionTypes.POST: {
       if (Array.isArray(state)) {
         state.push(action.payload)
       } else {
@@ -25,9 +27,8 @@ export function reducer<Shape>(
 
       return state
     }
-    case actionTypes.DELETE:
-      console.log('Delete values from the store here')
-      break
+    case ActionTypes.DELETE:
+      return state.filter((obj) => obj.id !== action.payload.id)
 
     default:
       console.error('Action must be a predefined actionType.')
