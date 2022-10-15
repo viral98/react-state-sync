@@ -1,4 +1,5 @@
 import md5 from 'md5'
+import { ApiQueryParams } from '../types/api'
 
 interface BaseCacheResourceInterface<T> {
   timeStamp: string
@@ -15,8 +16,24 @@ export abstract class BaseCacheResource<T> {
     >
   }
 
-  public get(query: string): T | null {
-    return this.cache?.get(this.hash(query))?.value ?? null
+  public get(id: string, query?: ApiQueryParams): T | null {
+    return this.cache?.get(this.hash([this.getName(), query].toString()))?.value ?? null
+  }
+
+  public getAll(query?: ApiQueryParams): T[] {
+    throw new Error(` ${query}, this is not implemented`)
+  }
+
+  public post(data: T, query?: ApiQueryParams): Promise<T> {
+    throw new Error(` ${data} ${query}, this is not implemented`)
+  }
+
+  public put(url: string, data: T, query?: ApiQueryParams): Promise<T> {
+    throw new Error(` ${data} ${query}, this is not implemented`)
+  }
+
+  public delete(id: string, url: string, query?: ApiQueryParams): Promise<void> {
+    throw new Error(`${query} ${id}, this is not implemented`)
   }
 
   public async set(query: string, data: T): Promise<void> {
