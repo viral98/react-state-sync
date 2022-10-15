@@ -1,20 +1,27 @@
 interface FetchProps {
-  url: string
-  method: 'GET' | 'POST' | 'DELETE' | 'PATCH'
-  header?: {
-    tokenKey: string
-    token: string
-  }
+  header?: string
 }
 
-const api = async ({ header, url, method }: FetchProps) => {
-  //TODO: Generate options object based on whether headers are passed
-  console.log(header)
-  const response = await fetch(url, {
-    method: method
-  })
+const api = ({ header }: FetchProps) => {
+  const { fetch: originalFetch } = window
 
-  return response
+  const updatedFetch = async (input: RequestInfo | URL, init: RequestInit) => {
+    if (header) {
+      init.headers = {
+        ...init.headers,
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json',
+        Authorization: 'Bearer ' + header
+      }
+    }
+
+    // request interceptor here
+    const response = await originalFetch(input, init)
+
+    return response
+  }
+
+  return updatedFetch
 }
 
 export default api
