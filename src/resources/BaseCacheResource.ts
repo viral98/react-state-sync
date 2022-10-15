@@ -1,4 +1,5 @@
 import md5 from 'md5'
+import { ApiQueryParams } from '../types/api'
 
 interface BaseCacheResourceInterface<T> {
   timeStamp: string
@@ -17,6 +18,10 @@ export abstract class BaseCacheResource<T> {
 
   public get(query: string): T | null {
     return this.cache?.get(this.hash(query))?.value ?? null
+  }
+
+  public getAll(path: string, query?: ApiQueryParams): T[] {
+    throw new Error(`${path} ${query}, this is not implemented`)
   }
 
   public async set(query: string, data: T): Promise<void> {

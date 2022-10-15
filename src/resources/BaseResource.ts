@@ -1,10 +1,13 @@
 import createStore from '../createStore'
+import { BaseCacheResource } from './BaseCacheResource'
 
 export abstract class BaseResource<T> {
   private store
+  private cacheResource
 
-  constructor() {
+  constructor(cacheResource: BaseCacheResource<T>) {
     this.store = createStore([] as T[])
+    this.cacheResource = cacheResource
   }
 
   protected abstract getPath(): string
@@ -12,9 +15,11 @@ export abstract class BaseResource<T> {
   protected abstract getName(): string
 
   public getAll = async () => {
-    const resp = await fetch(process.env.NEXT_PUBLIC_API_URL + this.getPath())
+    const resp = this.cacheResource.getAll(this.getPath())
 
-    this.store.setState((await resp.json()) as unknown as T[])
+    if (resp) {
+      this.store.setState(resp)
+    }
 
     return this.store.getState()
   }
