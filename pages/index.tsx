@@ -1,50 +1,48 @@
-import store, { type ValuesStore } from '../src/store'
+import { useEffect, useState } from 'react'
+import { BookCacheResource } from '../src/resources/BookCacheResource'
+import { BookResource } from '../src/resources/BookResource'
+import { Book } from '../src/types/books'
 
-export function getServerSideProps() {
-  return {
-    props: {
-      initialState: {
-        value1: 0,
-        value2: 0
-      }
+function App() {
+  const [books, setBooks] = useState([] as unknown as Book[])
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const books = await new BookResource(new BookCacheResource()).getAll()
+
+      setBooks(books)
     }
-  }
-}
 
-const DisplayValue = ({ item }: { item: keyof ValuesStore }) => (
-  <div>
-    {item}: {store.useStore((state) => state[item])}
-  </div>
-)
+    fetchBooks()
+  }, [])
 
-const IncrementValue = ({ item }: { item: keyof ValuesStore }) => (
-  <button
-    onClick={() => {
-      const state = store.getState()
-
-      store.setState({
-        ...state,
-        [item]: state[item] + 1
-      })
-    }}>
-    Increment {item}
-  </button>
-)
-
-function App({ initialState }: { initialState: ValuesStore }) {
-  store.serverInitialize(initialState)
   return (
     <div
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         maxWidth: 600,
-        gap: '1rem'
+        gap: '2rem'
       }}>
-      <IncrementValue item="value1" />
-      <DisplayValue item="value1" />
-      <IncrementValue item="value2" />
-      <DisplayValue item="value2" />
+      <div>
+        <h2>Books</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+            </tr>
+          </thead>
+          <tbody>
+            {books.map((book: Book) => (
+              <tr key={book.id}>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

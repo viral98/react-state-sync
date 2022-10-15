@@ -1,16 +1,27 @@
 import createStore from '../createStore'
-import { ApiQueryParams } from '../types/api'
+import { BaseCacheResource } from './BaseCacheResource'
 
 export abstract class BaseResource<T> {
-  constructor() {
-    const store = createStore({} as T)
+  private store
+  private cacheResource
 
-    console.log(store)
+  constructor(cacheResource: BaseCacheResource<T>) {
+    this.store = createStore([] as T[])
+    this.cacheResource = cacheResource
   }
-  public getAll = async (params?: ApiQueryParams) => {
-    console.error(params)
 
-    throw new Error('Not implemented')
+  protected abstract getPath(): string
+
+  protected abstract getName(): string
+
+  public getAll = async () => {
+    const resp = this.cacheResource.getAll()
+
+    if (resp) {
+      this.store.setState(resp)
+    }
+
+    return this.store.getState()
   }
 
   public post = async (data: Partial<T>) => {
