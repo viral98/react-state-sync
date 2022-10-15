@@ -16,24 +16,24 @@ export abstract class BaseCacheResource<T> {
     >
   }
 
-  public get(id: string, url: string, query?: ApiQueryParams): T | null {
-    return this.cache?.get(this.hash([url, query].toString()))?.value ?? null
+  public get(id: string, query?: ApiQueryParams): T | null {
+    return this.cache?.get(this.hash([this.getName(), query].toString()))?.value ?? null
   }
 
-  public getAll(url: string, query?: ApiQueryParams): T[] {
-    throw new Error(`${url} ${query}, this is not implemented`)
+  public getAll(query?: ApiQueryParams): T[] {
+    throw new Error(` ${query}, this is not implemented`)
   }
 
-  public post(url: string, data: T, query?: ApiQueryParams): Promise<T> {
-    throw new Error(`${url} ${data} ${query}, this is not implemented`)
+  public post(data: T, query?: ApiQueryParams): Promise<T> {
+    throw new Error(` ${data} ${query}, this is not implemented`)
   }
 
   public put(url: string, data: T, query?: ApiQueryParams): Promise<T> {
-    throw new Error(`${url} ${data} ${query}, this is not implemented`)
+    throw new Error(` ${data} ${query}, this is not implemented`)
   }
 
   public delete(id: string, url: string, query?: ApiQueryParams): Promise<void> {
-    throw new Error(`${url} ${query} ${id}, this is not implemented`)
+    throw new Error(`${query} ${id}, this is not implemented`)
   }
 
   public async set(query: string, data: T): Promise<void> {

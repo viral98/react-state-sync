@@ -15,7 +15,7 @@ export abstract class BaseResource<T> {
   protected abstract getName(): string
 
   public getAll = async () => {
-    const resp = this.cacheResource.getAll(this.getPath())
+    const resp = this.cacheResource.getAll()
 
     if (resp) {
       this.store.setState(resp)
