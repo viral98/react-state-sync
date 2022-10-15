@@ -21,20 +21,25 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
     const hasData = Boolean(data)
 
     const timeStamp = data?.timeStamp
+    let currentTime = 0
+
+    if (timeStamp) {
+      currentTime = timeStamp.getTime()
+    }
 
     //TODO: Check how to perform date calculations without using moment.js
-    const isFresh = data ? new Date().getTime() - timeStamp.getTime() < this.ttl : false
+    const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
 
     //The data is fresh
     if (isFresh && data) {
       return data?.value
     }
+
     //The data is stale
-    // const deferred = TODO: fetch and store data.then((result: Data) => {
+    //const deferred = TODO: fetch and store data.then((result: Data) => {
     // TODO: hashing logic
-    // updatedAt = Date.now()
     // data = result
-    //return data
+    //return this.set(param)
     //})
 
     //  The data is stale
