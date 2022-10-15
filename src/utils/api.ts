@@ -10,6 +10,7 @@ interface FetchProps {
 const api = async ({header, url, method}:FetchProps) => {
 
   //TODO: Generate options object based on whether headers are passed
+    console.log(header)
     const response = await fetch(url, {
         method: method,
     });
