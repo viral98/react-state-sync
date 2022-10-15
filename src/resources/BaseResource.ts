@@ -1,12 +1,13 @@
-import createStore from '../createStore'
+import createStore, { StoreState } from '../createStore'
 import { BaseCacheResource } from './BaseCacheResource'
 
 export abstract class BaseResource<T> {
   private store
-  private cacheResource
+  private cacheResource: BaseCacheResource<T>
 
   constructor(cacheResource: BaseCacheResource<T>) {
-    this.store = createStore([] as T[])
+    this.store = createStore({} as StoreState<T>)
+
     this.cacheResource = cacheResource
   }
 
@@ -18,7 +19,7 @@ export abstract class BaseResource<T> {
     const resp = this.cacheResource.getAll()
 
     if (resp) {
-      this.store.setState(resp)
+      //Perform a action dispatch here
     }
 
     return this.store.getState()
