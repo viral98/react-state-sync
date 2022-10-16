@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { BookCacheResource } from '../src/resources/BookCacheResource'
 import { BookResource } from '../src/resources/BookResource'
+import { BookCacheServiceResource } from '../src/services/BookCacheServiceResource'
 import { Book } from '../src/types/books'
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const books = await new BookResource(new BookCacheResource()).getAll()
+      const books = await new BookResource(new BookCacheServiceResource()).getAll()
 
       setBooks(books)
     }
@@ -16,6 +16,7 @@ function App() {
     fetchBooks()
   }, [])
 
+  console.log(books)
   return (
     <div
       style={{

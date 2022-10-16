@@ -34,7 +34,7 @@ export interface ApiQueryParamsPage {
   size: number
 }
 
-export interface ApiQueryParams {
+export interface ApiQueryParams extends RequestInit {
   page?: ApiQueryParamsPage
   filter?: ApiQueryParamsFilter
   include?: string
