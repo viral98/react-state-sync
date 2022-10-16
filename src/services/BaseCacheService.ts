@@ -1,7 +1,6 @@
 import { StoreState } from '../createStore'
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
-import api from '../utils/api'
 
 export class BaseCacheService<T> extends BaseCacheResource<T> {
   private ttl: number

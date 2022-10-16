@@ -102,7 +102,7 @@ export abstract class BaseCacheResource<T> {
     this.cache?.clear()
   }
 
-  protected  getPath(){
+  protected getPath() {
     return this.path
   }
 }
