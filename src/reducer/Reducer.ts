@@ -1,7 +1,7 @@
 import { ActionTypes, BaseActions } from '../actions/BaseActions'
 import { DefaultObject, StoreState } from '../createStore'
 
-export function reducer<Shape extends DefaultObject>(
+export function baseReducer<Shape extends DefaultObject>(
   state: StoreState<Shape>[],
   action: BaseActions<Shape>
 ): StoreState<Shape>[] {

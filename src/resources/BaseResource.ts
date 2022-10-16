@@ -6,7 +6,7 @@ export abstract class BaseResource<T> {
   private cacheResource: BaseCacheResource<T>
 
   constructor(cacheResource: BaseCacheResource<T>) {
-    this.store = createStore({} as StoreState<T>)
+    this.store = createStore({} as StoreState<T[]>)
 
     this.cacheResource = cacheResource
   }
