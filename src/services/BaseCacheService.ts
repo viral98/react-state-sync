@@ -32,7 +32,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
       console.error('Api not initialised')
     }
 
-    throw new Error('Not implemented')
+    return new Promise(() => null)
   }
 
   public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
