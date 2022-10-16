@@ -1,26 +1,26 @@
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
 
+//const DEFAULT_PATH = 'http://localhost:3000'
+
 export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   private ttl: number
   private updatedAt: number
+  private url: string
 
   constructor() {
     super()
 
     this.ttl = 3_600_000
     this.updatedAt = 0
+    this.url = `${process.env.NEXT_PUBLIC_API_URL}/${this.getPath()}`
   }
 
-  public async getAll() {
-    throw new Error('Not implemented')
-  }
+  public async getCachedValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
+    const data = this.get({ id, param, query })
+    //const hasData = Boolean(data)
 
-  public async getCachedValue(param: ApiQueryParams): Promise<T | null> {
-    const data = this.get(param)
-    const hasData = Boolean(data)
-
-    const timeStamp = data?.timeStamp
+    const timeStamp = this.getTimeStamp(query, param)
     let currentTime = 0
 
     if (timeStamp) {
@@ -32,10 +32,10 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
 
     //The data is fresh
     if (isFresh && data) {
-      return data?.value
+      return data
     }
 
-    const deferred = await fetch(process.env.NEXT_PUBLIC_API_URL)
+    //const resp = await fetch(process.env.NEXT_PUBLIC_API_URL + this.getPath())
 
     //The data is stale
     //const deferred = TODO: fetch and store data.then((result: Data) => {
@@ -45,7 +45,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
     //})
 
     // The data is not cached
-
+    return null
     //return this.deferred
   }
 
@@ -62,8 +62,8 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async create(data: Partial<T>) {
-    const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL)
-
+    //const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_PATH)
+    console.log(data)
     throw new Error('Not implemented')
   }
 }
