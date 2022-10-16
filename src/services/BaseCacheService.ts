@@ -21,7 +21,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
 
     if (cachedData) {
       return cachedData.value
-    } else {
+    } else if (this.api) {
       //TODO: Add logic to store data in cache
 
       const serverData = await (
@@ -29,9 +29,11 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
       ).json()
 
       return serverData as unknown as StoreState<T[]>
+    } else {
+      console.error('Api not initialised')
     }
 
-    throw new Error('Not implemented')
+    return new Promise(() => null)
   }
 
   public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {

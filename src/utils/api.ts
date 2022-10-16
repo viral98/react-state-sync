@@ -3,6 +3,10 @@ interface FetchProps {
 }
 
 const api = ({ header }: FetchProps) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
   const { fetch: originalFetch } = window
 
   const updatedFetch = async (input: RequestInfo, init: RequestInit) => {
