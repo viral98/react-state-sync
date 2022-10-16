@@ -18,7 +18,7 @@ export abstract class BaseCacheResource<T> {
   constructor() {
     //Hydrate function
     this.cache =
-      window.localStorage.getItem(this.getPath()) !== null
+      typeof window !== 'undefined' && localStorage.getItem(this.getPath()) !== null
         ? (JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
             string,
             BaseCacheResourceInterface<T>

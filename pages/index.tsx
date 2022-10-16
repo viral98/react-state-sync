@@ -1,22 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { BookResource } from '../src/resources/BookResource'
 import { BookCacheServiceResource } from '../src/services/BookCacheServiceResource'
 import { Book } from '../src/types/books'
 
 function App() {
   const [books, setBooks] = useState([] as unknown as Book[])
+  const [mySelectedValues, setMySelectedValues] = useState([] as unknown as Book[keyof Book][])
 
-  useEffect(() => {
+  const bookResource = useMemo(() => {
+    const bookResource = new BookResource(new BookCacheServiceResource())
+
     const fetchBooks = async () => {
-      const books = await new BookResource(new BookCacheServiceResource()).getAll()
+      const books = await bookResource.getAll()
 
       setBooks(books)
     }
 
     fetchBooks()
+    return bookResource
   }, [])
 
-  console.log(books)
+  const myCustomSelector = (allBooks: Book[]) => {
+    setMySelectedValues(allBooks.map((book) => book.title))
+  }
+
+  bookResource.getValues(myCustomSelector)
   return (
     <div
       style={{
@@ -44,6 +52,8 @@ function App() {
           </tbody>
         </table>
       </div>
+
+      {mySelectedValues.map((value: Book[keyof Book]) => value)}
     </div>
   )
 }
