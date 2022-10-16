@@ -57,8 +57,9 @@ export abstract class BaseCacheResource<T> {
     return this.cache?.get(key)?.timeStamp
   }
 
-  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> {
-    throw new Error(` ${query}, this is not implemented`)
+  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> | null {
+    console.error('Get All is not defined', query)
+    return null
   }
 
   public post(data: T, query?: ApiQueryParams): Promise<T> {
