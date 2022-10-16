@@ -17,10 +17,13 @@ export abstract class BaseCacheResource<T> {
 
   constructor() {
     //Hydrate function
-    this.cache = JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
-      string,
-      BaseCacheResourceInterface<T>
-    >
+    this.cache =
+      window.localStorage.getItem(this.getPath()) !== null
+        ? (JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
+            string,
+            BaseCacheResourceInterface<T>
+          >)
+        : new Map<string, BaseCacheResourceInterface<T>>()
   }
 
   public get({ id, query, param }: GetInterface): T | null {
