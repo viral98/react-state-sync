@@ -1,9 +1,7 @@
 import createStore from './createStore'
 import { Book } from './types/books'
 
-const store = createStore({
-  books: [] as Book[]
-})
+const store = createStore<Book>([])
 
 export type ValuesStore = ReturnType<typeof store.getState>
 

@@ -1,22 +1,39 @@
+import { StoreState } from '../createStore'
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
-
-//const DEFAULT_PATH = 'http://localhost:3000'
+import api from '../utils/api'
 
 export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   private ttl: number
-  private updatedAt: number
-  private url: string
+  private data = null
+  private updatedAt = 0
+  private api
 
   constructor() {
     super()
-
     this.ttl = 3_600_000
-    this.updatedAt = 0
-    this.url = `${process.env.NEXT_PUBLIC_API_URL}/${this.getPath()}`
+    this.api = api({})
   }
 
-  public async getCachedValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
+  public async getAllValues(params?: ApiQueryParams): Promise<StoreState<T[]>> {
+    const cachedData = await this.getAll()
+
+    if (cachedData) {
+      return cachedData.value
+    } else {
+      //TODO: Add logic to store data in cache
+
+      const serverData = await (
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.getPath(), params ?? {})
+      ).json()
+
+      return serverData as unknown as StoreState<T[]>
+    }
+
+    throw new Error('Not implemented')
+  }
+
+  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
     const data = this.get({ id, param, query })
     //const hasData = Boolean(data)
 

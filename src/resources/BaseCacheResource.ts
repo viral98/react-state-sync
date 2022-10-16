@@ -1,10 +1,11 @@
 import md5 from 'md5'
+import { StoreState } from '../createStore'
 import { ApiQueryParams } from '../types/api'
 import { generateCacheString } from '../utils/cache'
 
 interface BaseCacheResourceInterface<T> {
   timeStamp: Date
-  value: T[]
+  value: StoreState<T[]>
 }
 export interface GetInterface {
   id: string
@@ -72,7 +73,7 @@ export abstract class BaseCacheResource<T> {
     throw new Error(`${query} ${id}, this is not implemented`)
   }
 
-  public async set(param: ApiQueryParams, data: T[], query: string): Promise<void> {
+  public async set(param: ApiQueryParams, data: StoreState<T[]>, query: string): Promise<void> {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
 

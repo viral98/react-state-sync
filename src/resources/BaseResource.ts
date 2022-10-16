@@ -1,13 +1,15 @@
-import createStore from '../createStore'
-import { BaseCacheResource } from './BaseCacheResource'
+import { ActionTypes, PutAllValuesInStore } from '../actions/BaseActions'
+import createStore, { DefaultObject, StoreState } from '../createStore'
+import { BaseCacheService } from '../services/BaseCacheService'
 
-export abstract class BaseResource<T> {
+export abstract class BaseResource<T extends DefaultObject> {
   private store
-  private cacheResource
+  private cacheServiceResource: BaseCacheService<T>
 
-  constructor(cacheResource: BaseCacheResource<T>) {
-    this.store = createStore([] as T[])
-    this.cacheResource = cacheResource
+  constructor(cacheResource: BaseCacheService<T>) {
+    this.store = createStore({} as StoreState<T[]>)
+
+    this.cacheServiceResource = cacheResource
   }
 
   protected abstract getPath(): string
@@ -15,10 +17,15 @@ export abstract class BaseResource<T> {
   protected abstract getName(): string
 
   public getAll = async () => {
-    const resp = this.cacheResource.getAll()
+    const resp = await this.cacheServiceResource.getAllValues()
 
     if (resp) {
-      this.store.setState(resp)
+      PutAllValuesInStore({
+        payload: resp,
+        store: this.store,
+        state: this.store.getState(),
+        type: ActionTypes.GET_ALL
+      })
     }
 
     return this.store.getState()
