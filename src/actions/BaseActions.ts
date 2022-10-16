@@ -57,11 +57,12 @@ export function DeleteValueFromStore<T extends DefaultObject>({
 export function PutAllValuesInStore<T extends DefaultObject>({
   payload,
   store,
-  state
+  state,
+  type = ActionTypes.GET_ALL
 }: GetAllAction<T> & BaseActionProps<T>) {
   store.setState(
     baseReducer(state, {
-      type: ActionTypes.GET_ALL,
+      type: type,
       payload
     })
   )
