@@ -1,7 +1,8 @@
-import createStore, { StoreState } from '../createStore'
+import { ActionTypes, PutAllValuesInStore } from '../actions/BaseActions'
+import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheResource } from './BaseCacheResource'
 
-export abstract class BaseResource<T> {
+export abstract class BaseResource<T extends DefaultObject> {
   private store
   private cacheResource: BaseCacheResource<T>
 
@@ -16,10 +17,15 @@ export abstract class BaseResource<T> {
   protected abstract getName(): string
 
   public getAll = async () => {
-    const resp = this.cacheResource.getAll()
+    const resp = await this.cacheResource.getAll()
 
     if (resp) {
-      //Perform a action dispatch here
+      PutAllValuesInStore({
+        payload: resp,
+        store: this.store,
+        state: this.store.getState(),
+        type: ActionTypes.GET_ALL
+      })
     }
 
     return this.store.getState()

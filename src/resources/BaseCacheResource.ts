@@ -21,7 +21,7 @@ export abstract class BaseCacheResource<T> {
     return this.cache?.get(this.hash([this.getName(), query].toString()))?.value ?? null
   }
 
-  public getAll(query?: ApiQueryParams): StoreState<T>[] {
+  public getAll(query?: ApiQueryParams): StoreState<T[]> {
     throw new Error(` ${query}, this is not implemented`)
   }
 
