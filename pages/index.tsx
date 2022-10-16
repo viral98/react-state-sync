@@ -1,14 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useOrchestrated } from '../src/hooks/useOrchestrated'
 import { Book } from '../src/types/books'
 
 function App() {
   const [books, setBooks] = useState([] as unknown as Book[])
   const [mySelectedValues, setMySelectedValues] = useState([] as unknown as Book[keyof Book][])
+  const bookResource = useOrchestrated<Book>({ pathName: 'books' })
 
-  const bookResource = useMemo(() => {
-    const bookResource = useOrchestrated<Book>({ pathName: 'books' })
-
+  useEffect(() => {
     const fetchBooks = async () => {
       if (bookResource) {
         const books = await bookResource.getAll()
@@ -18,8 +17,7 @@ function App() {
     }
 
     fetchBooks()
-    return bookResource
-  }, [])
+  }, [bookResource])
 
   const myCustomSelector = (allBooks: Book[]) => {
     setMySelectedValues(allBooks.map((book) => book.title))
