@@ -5,7 +5,7 @@ interface FetchProps {
 const api = ({ header }: FetchProps) => {
   const { fetch: originalFetch } = window
 
-  const updatedFetch = async (input: RequestInfo | URL, init: RequestInit) => {
+  const updatedFetch = async (input: RequestInfo, init: RequestInit) => {
     if (header) {
       init.headers = {
         ...init.headers,
