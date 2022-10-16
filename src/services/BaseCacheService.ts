@@ -20,7 +20,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
 
     if (cachedData) {
       return cachedData.value
-    } else {
+    } else if (this.api) {
       //TODO: Add logic to store data in cache
 
       const serverData = await (
@@ -28,6 +28,8 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
       ).json()
 
       return serverData as unknown as StoreState<T[]>
+    } else {
+      throw new Error('Api not initialised')
     }
 
     throw new Error('Not implemented')
