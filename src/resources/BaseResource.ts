@@ -54,4 +54,20 @@ export abstract class BaseResource<T extends DefaultObject> {
 
     throw new Error('Not implemented')
   }
+
+  public getValues = (inputKey: keyof T) => {
+    return Array.isArray(this.store.getState())
+      ? this.store.getState().map((object) => {
+          return object[inputKey]
+        })
+      : []
+  }
+
+  public getValue = (inputKey: keyof T, id: string) => {
+    return this.store.getState().find((object) => object.id === id)?.[inputKey]
+  }
+
+  public getObject = (id: string) => {
+    return this.store.getState().find((object) => object.id === id)
+  }
 }

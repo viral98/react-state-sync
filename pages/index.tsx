@@ -5,10 +5,11 @@ import { Book } from '../src/types/books'
 
 function App() {
   const [books, setBooks] = useState([] as unknown as Book[])
+  const bookResource = new BookResource(new BookCacheServiceResource())
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const books = await new BookResource(new BookCacheServiceResource()).getAll()
+      const books = await bookResource.getAll()
 
       setBooks(books)
     }
@@ -16,7 +17,8 @@ function App() {
     fetchBooks()
   }, [])
 
-  console.log(books)
+  console.log('Testing if we get a value', bookResource.getValues('title'))
+
   return (
     <div
       style={{
