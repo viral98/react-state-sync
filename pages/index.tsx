@@ -6,6 +6,7 @@ import { Book } from '../src/types/books'
 function App() {
   const [books, setBooks] = useState([] as unknown as Book[])
   const bookResource = new BookResource(new BookCacheServiceResource())
+  const [mySelectedValues, setMySelectedValues] = useState([] as unknown as Book[keyof Book][])
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -17,7 +18,11 @@ function App() {
     fetchBooks()
   }, [])
 
-  console.log('Testing if we get a value', bookResource.getValues('title'))
+  const myCustomSelector = (allBooks: Book[]) => {
+    setMySelectedValues(allBooks.map((book) => book.title))
+  }
+
+  console.log('Testing if we get a value', bookResource.getValues(myCustomSelector))
 
   return (
     <div
@@ -46,6 +51,8 @@ function App() {
           </tbody>
         </table>
       </div>
+
+      {mySelectedValues.map((value: Book[keyof Book]) => value)}
     </div>
   )
 }

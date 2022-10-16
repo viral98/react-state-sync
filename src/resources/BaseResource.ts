@@ -55,12 +55,8 @@ export abstract class BaseResource<T extends DefaultObject> {
     throw new Error('Not implemented')
   }
 
-  public getValues = (inputKey: keyof T) => {
-    return Array.isArray(this.store.getState())
-      ? this.store.getState().map((object) => {
-          return object[inputKey]
-        })
-      : []
+  public getValues = (myCallBack: (state: T[]) => void) => {
+    this.store.subscribe(myCallBack)
   }
 
   public getValue = (inputKey: keyof T, id: string) => {
