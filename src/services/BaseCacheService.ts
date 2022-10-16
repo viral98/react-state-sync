@@ -1,18 +1,20 @@
 import { StoreState } from '../createStore'
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
-import api from '../utils/api'
 
-export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
+export class BaseCacheService<T> extends BaseCacheResource<T> {
   private ttl: number
   private data = null
   private updatedAt = 0
   private api
+  private pathName
 
-  constructor() {
-    super()
+  constructor(pathName: string, api: (input: RequestInfo, init: RequestInit) => Promise<Response>) {
+    super(pathName)
+
+    this.pathName = pathName
     this.ttl = 3_600_000
-    this.api = api({})
+    this.api = api
   }
 
   public async getAllValues(params?: ApiQueryParams): Promise<StoreState<T[]>> {
@@ -24,7 +26,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
       //TODO: Add logic to store data in cache
 
       const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.getPath(), params ?? {})
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, params ?? {})
       ).json()
 
       return serverData as unknown as StoreState<T[]>

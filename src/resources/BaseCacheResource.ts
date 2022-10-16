@@ -14,9 +14,11 @@ export interface GetInterface {
 }
 export abstract class BaseCacheResource<T> {
   protected cache: Map<string, BaseCacheResourceInterface<T>> | undefined
+  protected path: string
 
-  constructor() {
+  constructor(path: string) {
     //Hydrate function
+    this.path = path
     this.cache =
       typeof window !== 'undefined' && localStorage.getItem(this.getPath()) !== null
         ? (JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
@@ -100,5 +102,7 @@ export abstract class BaseCacheResource<T> {
     this.cache?.clear()
   }
 
-  protected abstract getPath(): string
+  protected getPath() {
+    return this.path
+  }
 }
