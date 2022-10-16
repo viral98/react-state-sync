@@ -1,48 +1,88 @@
 import md5 from 'md5'
 import { StoreState } from '../createStore'
 import { ApiQueryParams } from '../types/api'
+import { generateCacheString } from '../utils/cache'
 
 interface BaseCacheResourceInterface<T> {
-  timeStamp: string
-  value: StoreState<T>
+  timeStamp: Date
+  value: StoreState<T[]>
+}
+export interface GetInterface {
+  id: string
+  param?: ApiQueryParams
+  query?: string
 }
 export abstract class BaseCacheResource<T> {
   protected cache: Map<string, BaseCacheResourceInterface<T>> | undefined
 
   constructor() {
     //Hydrate function
-    // this.cache = JSON.parse(window.localStorage.getItem(this.getName()) ?? '') as Map<
-    //   string,
-    //   BaseCacheResourceInterface<T>
-    // >
+    this.cache =
+      window.localStorage.getItem(this.getPath()) !== null
+        ? (JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
+            string,
+            BaseCacheResourceInterface<T>
+          >)
+        : new Map<string, BaseCacheResourceInterface<T>>()
   }
 
-  public get(id: string, query?: ApiQueryParams): StoreState<T> | null {
-    return this.cache?.get(this.hash([this.getName(), query].toString()))?.value ?? null
+  public get({ id, query, param }: GetInterface): T | null {
+    //TODO: FIX BASE CACHE RESOURCE INTERFACE'S VALUE TO BE OF TYPE STORE STATE
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    const values = this.cache?.get(key)?.value
+
+    console.log(values)
+    console.log(id)
+    //values?.forEach((element) => {
+    //if (element.id == id) {
+    //return element
+    //} else {
+    //return null
+    //}
+    //})
+    // return (
+    //   this.cache
+    //     ?.get(this.hash([this.getPath(), query].toString()))
+    //     ?.value.filter((obj) => obj.id === id) ?? null
+    // )
+
+    return null
+  }
+  public getTimeStamp(query: string, param: ApiQueryParams): Date | undefined {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    return this.cache?.get(key)?.timeStamp
   }
 
-  public getAll(query?: ApiQueryParams): StoreState<T[]> | null {
-    console.error('BaseCacheResource.getAll() is not implemented', query)
+  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> | null {
+    console.error('Get All is not defined', query)
     return null
   }
 
   public post(data: T, query?: ApiQueryParams): Promise<T> {
+    this.invalidate()
     throw new Error(` ${data} ${query}, this is not implemented`)
   }
 
   public put(url: string, data: T, query?: ApiQueryParams): Promise<T> {
+    this.invalidate()
     throw new Error(` ${data} ${query}, this is not implemented`)
   }
 
   public delete(id: string, url: string, query?: ApiQueryParams): Promise<void> {
+    this.invalidate()
     throw new Error(`${query} ${id}, this is not implemented`)
   }
 
-  public async set(query: string, data: StoreState<T>): Promise<void> {
-    const key = this.hash(query)
+  public async set(param: ApiQueryParams, data: StoreState<T[]>, query: string): Promise<void> {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
 
     const value: BaseCacheResourceInterface<T> = {
-      timeStamp: new Date().toUTCString(),
+      timeStamp: new Date(),
       value: data
     }
 
@@ -50,10 +90,15 @@ export abstract class BaseCacheResource<T> {
   }
 
   private hash(query: string): string {
-    const hashedQuery = md5(query)
+    const hashedQuery = md5(JSON.stringify(query))
 
     return hashedQuery
   }
 
-  protected abstract getName(): string
+  private invalidate() {
+    //TODO:Clear local storage
+    this.cache?.clear()
+  }
+
+  protected abstract getPath(): string
 }

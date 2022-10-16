@@ -19,12 +19,12 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
     const cachedData = await this.getAll()
 
     if (cachedData) {
-      return cachedData
+      return cachedData.value
     } else {
       //TODO: Add logic to store data in cache
 
       const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.getName(), params ?? {})
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.getPath(), params ?? {})
       ).json()
 
       return serverData as unknown as StoreState<T[]>
@@ -33,33 +33,37 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
     throw new Error('Not implemented')
   }
 
-  public async getSingleValue(id: string) {
-    const hasData = Boolean(this.data)
-    const isFresh = Date.now() - this.updatedAt < this.ttl
+  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
+    const data = this.get({ id, param, query })
+    //const hasData = Boolean(data)
 
-    if (isFresh) {
-      return this.data
+    const timeStamp = this.getTimeStamp(query, param)
+    let currentTime = 0
+
+    if (timeStamp) {
+      currentTime = timeStamp.getTime()
     }
+
+    //TODO: Check how to perform date calculations without using moment.js
+    const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
+
     //The data is fresh
-    // const deferred = TODO: fetch and store data.then((result: Data) => {
+    if (isFresh && data) {
+      return data
+    }
+
+    //const resp = await fetch(process.env.NEXT_PUBLIC_API_URL + this.getPath())
+
+    //The data is stale
+    //const deferred = TODO: fetch and store data.then((result: Data) => {
     // TODO: hashing logic
-    // updatedAt = Date.now()
     // data = result
-    //return data
+    //return this.set(param)
     //})
 
-    //  The data is stale
-
-    if (hasData) {
-      return this.data
-    }
-
     // The data is not cached
-
+    return null
     //return this.deferred
-    console.error(id)
-
-    throw new Error('Not implemented')
   }
 
   public async update(id: string, data: Partial<T>) {
@@ -75,8 +79,8 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async create(data: Partial<T>) {
-    console.error(data)
-
+    //const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_PATH)
+    console.log(data)
     throw new Error('Not implemented')
   }
 }
