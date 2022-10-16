@@ -8,10 +8,12 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   private data = null
   private updatedAt = 0
   private api
+  private pathName
 
   constructor(pathName: string, api: (input: RequestInfo, init: RequestInit) => Promise<Response>) {
     super(pathName)
 
+    this.pathName = pathName
     this.ttl = 3_600_000
     this.api = api
   }
@@ -25,7 +27,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
       //TODO: Add logic to store data in cache
 
       const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.getPath(), params ?? {})
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, params ?? {})
       ).json()
 
       return serverData as unknown as StoreState<T[]>

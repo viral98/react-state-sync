@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { BookResource } from '../src/resources/BookResource'
-import { BookCacheServiceResource } from '../src/services/BookCacheServiceResource'
+import { useOrchestrated } from '../src/hooks/useOrchestrated'
 import { Book } from '../src/types/books'
 
 function App() {
@@ -8,12 +7,14 @@ function App() {
   const [mySelectedValues, setMySelectedValues] = useState([] as unknown as Book[keyof Book][])
 
   const bookResource = useMemo(() => {
-    const bookResource = new BookResource(new BookCacheServiceResource())
+    const bookResource = useOrchestrated<Book>({ pathName: 'books' })
 
     const fetchBooks = async () => {
-      const books = await bookResource.getAll()
+      if (bookResource) {
+        const books = await bookResource.getAll()
 
-      setBooks(books)
+        setBooks(books)
+      }
     }
 
     fetchBooks()
@@ -24,7 +25,7 @@ function App() {
     setMySelectedValues(allBooks.map((book) => book.title))
   }
 
-  bookResource.getValues(myCustomSelector)
+  bookResource?.getValues(myCustomSelector)
   return (
     <div
       style={{
@@ -43,8 +44,8 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {books.map((book: Book) => (
-              <tr key={book.id}>
+            {books.map((book: Book, index) => (
+              <tr key={index}>
                 <td>{book.title}</td>
                 <td>{book.author}</td>
               </tr>
@@ -53,7 +54,12 @@ function App() {
         </table>
       </div>
 
-      {mySelectedValues.map((value: Book[keyof Book]) => value)}
+      <div>
+        A List of Selected values over Title
+        {mySelectedValues.map((value: Book[keyof Book], index) => (
+          <span key={index}>{value}</span>
+        ))}
+      </div>
     </div>
   )
 }

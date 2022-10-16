@@ -9,6 +9,11 @@ interface UseOrchestratedProps<T> {
 }
 export function useOrchestrated<T extends DefaultObject>({ pathName }: UseOrchestratedProps<T>) {
   const concreteApi = api({})
+
+  if (!concreteApi) {
+    return null
+  }
+
   const concreteCacheService = new BaseCacheService<T>(pathName, concreteApi)
   const concreteBaseResource = new BaseResource<T>(concreteCacheService, pathName)
 
