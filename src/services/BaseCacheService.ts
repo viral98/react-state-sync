@@ -29,7 +29,7 @@ export abstract class BaseCacheService<T> extends BaseCacheResource<T> {
 
       return serverData as unknown as StoreState<T[]>
     } else {
-      throw new Error('Api not initialised')
+      console.error('Api not initialised')
     }
 
     throw new Error('Not implemented')
