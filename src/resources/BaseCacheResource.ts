@@ -11,18 +11,19 @@ export abstract class BaseCacheResource<T> {
 
   constructor() {
     //Hydrate function
-    this.cache = JSON.parse(window.localStorage.getItem(this.getName()) ?? '') as Map<
-      string,
-      BaseCacheResourceInterface<T>
-    >
+    // this.cache = JSON.parse(window.localStorage.getItem(this.getName()) ?? '') as Map<
+    //   string,
+    //   BaseCacheResourceInterface<T>
+    // >
   }
 
   public get(id: string, query?: ApiQueryParams): StoreState<T> | null {
     return this.cache?.get(this.hash([this.getName(), query].toString()))?.value ?? null
   }
 
-  public getAll(query?: ApiQueryParams): StoreState<T[]> {
-    throw new Error(` ${query}, this is not implemented`)
+  public getAll(query?: ApiQueryParams): StoreState<T[]> | null {
+    console.error('BaseCacheResource.getAll() is not implemented', query)
+    return null
   }
 
   public post(data: T, query?: ApiQueryParams): Promise<T> {
