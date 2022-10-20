@@ -3,9 +3,7 @@ import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
 
 export class BaseCacheService<T> extends BaseCacheResource<T> {
-  private ttl: number
   private data = null
-  private updatedAt = 0
   private api
   private pathName
 
@@ -13,67 +11,48 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     super(pathName)
 
     this.pathName = pathName
-    this.ttl = 3_600_000
+
     this.api = api
   }
 
   public async getAllValues(params?: ApiQueryParams): Promise<StoreState<T[]>> {
-    const cachedData = await this.getAll()
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const data = this.get({ param: params, query })
 
-    if (cachedData) {
-      return cachedData.value
-    } else if (this.api) {
-      //TODO: Add logic to store data in cache
-
+    if (data) {
+      return data
+    } else {
       const serverData = await (
         await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, params ?? {})
       ).json()
 
-      return serverData as unknown as StoreState<T[]>
-    } else {
-      console.error('Api not initialised')
-    }
+      this.set(serverData, query, params)
 
-    return new Promise(() => null)
+      return serverData
+    }
   }
 
-  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | null> {
+  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | void> {
     const data = this.get({ id, param, query })
-    //const hasData = Boolean(data)
 
-    const timeStamp = this.getTimeStamp(query, param)
-    let currentTime = 0
+    if (data) {
+      //TODO: FIX THIS
+      return data as unknown as T
+    } else {
+      const serverData = await (
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, param ?? {})
+      ).json()
 
-    if (timeStamp) {
-      currentTime = timeStamp.getTime()
+      this.set(serverData, query, param)
+      return serverData
     }
-
-    //TODO: Check how to perform date calculations without using moment.js
-    const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
-
-    //The data is fresh
-    if (isFresh && data) {
-      return data
-    }
-
-    //const resp = await fetch(process.env.NEXT_PUBLIC_API_URL + this.getPath())
-
-    //The data is stale
-    //const deferred = TODO: fetch and store data.then((result: Data) => {
-    // TODO: hashing logic
-    // data = result
-    //return this.set(param)
-    //})
-
-    // The data is not cached
-    return null
-    //return this.deferred
   }
 
-  public async update(id: string, data: Partial<T>) {
-    console.error(id, data)
+  public async update(id: string, data: T, param: ApiQueryParams) {
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
 
-    throw new Error('Not implemented')
+    console.log(id)
+    this.put(query, data, param)
   }
 
   public async delete(id: string) {
