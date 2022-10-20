@@ -7,88 +7,83 @@ interface BaseCacheResourceInterface<T> {
   timeStamp: Date
   value: StoreState<T[]>
 }
+
 export interface GetInterface {
-  id: string
+  id?: string
   param?: ApiQueryParams
-  query?: string
+  query: string
 }
+
 export abstract class BaseCacheResource<T> {
-  protected cache: Map<string, BaseCacheResourceInterface<T>> | undefined
   protected path: string
-
+  private updatedAt = 0
+  private ttl: number
   constructor(path: string) {
-    //Hydrate function
     this.path = path
-    this.cache =
-      typeof window !== 'undefined' && localStorage.getItem(this.getPath()) !== null
-        ? (JSON.parse(window.localStorage.getItem(this.getPath()) ?? '') as Map<
-            string,
-            BaseCacheResourceInterface<T>
-          >)
-        : new Map<string, BaseCacheResourceInterface<T>>()
+    this.ttl = 3_600_000
   }
 
-  public get({ id, query, param }: GetInterface): T | null {
-    //TODO: FIX BASE CACHE RESOURCE INTERFACE'S VALUE TO BE OF TYPE STORE STATE
-    const cacheString = generateCacheString({ query, param })
-    const key = this.hash(cacheString)
+  public get({ query, param }: GetInterface): StoreState<T[]> | null {
+    const timeStamp = this.getTimeStamp(query, param)
+    let currentTime = 0
 
-    const values = this.cache?.get(key)?.value
-
-    console.log(values)
-    console.log(id)
-    //values?.forEach((element) => {
-    //if (element.id == id) {
-    //return element
-    //} else {
-    //return null
-    //}
-    //})
-    // return (
-    //   this.cache
-    //     ?.get(this.hash([this.getPath(), query].toString()))
-    //     ?.value.filter((obj) => obj.id === id) ?? null
-    // )
-
-    return null
-  }
-  public getTimeStamp(query: string, param: ApiQueryParams): Date | undefined {
-    const cacheString = generateCacheString({ query, param })
-    const key = this.hash(cacheString)
-
-    return this.cache?.get(key)?.timeStamp
-  }
-
-  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> | null {
-    console.error('Get All is not defined', query)
-    return null
-  }
-
-  public post(data: T, query?: ApiQueryParams): Promise<T> {
-    this.invalidate()
-    throw new Error(` ${data} ${query}, this is not implemented`)
-  }
-
-  public put(url: string, data: T, query?: ApiQueryParams): Promise<T> {
-    this.invalidate()
-    throw new Error(` ${data} ${query}, this is not implemented`)
-  }
-
-  public delete(id: string, url: string, query?: ApiQueryParams): Promise<void> {
-    this.invalidate()
-    throw new Error(`${query} ${id}, this is not implemented`)
-  }
-
-  public async set(param: ApiQueryParams, data: StoreState<T[]>, query: string): Promise<void> {
-    const cacheString = generateCacheString({ query, param })
-    const key = this.hash(cacheString)
-
-    const value: BaseCacheResourceInterface<T> = {
-      timeStamp: new Date(),
-      value: data
+    if (timeStamp) {
+      currentTime = new Date(timeStamp).getTime()
     }
 
-    this.cache?.set(key, value)
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+    const data = this.getLocalStorage(key)
+
+    if (!data) {
+      return null
+    }
+
+    const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
+
+    if (isFresh && data) {
+      return (JSON.parse(data) as BaseCacheResourceInterface<T>).value
+    }
+
+    return null
+  }
+
+  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> {
+    const cacheString = generateCacheString({ param: query })
+
+    const hashedKey = this.hash(cacheString)
+
+    return JSON.parse(this.getLocalStorage(hashedKey) ?? '')
+  }
+
+  public post(data: T, query: string, param?: ApiQueryParams): void {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    this.invalidate(key)
+  }
+
+  public put(query: string, data: T, param?: ApiQueryParams): void {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    this.invalidate(key)
+  }
+
+  public delete(id: string, query: string, param?: ApiQueryParams): void {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    this.invalidate(key)
+  }
+
+  public async set(data: StoreState<T[]>, query: string, param?: ApiQueryParams): Promise<void> {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    const value = this.addMetaData(data)
+
+    this.setLocalStorage(key, JSON.stringify(value))
   }
 
   private hash(query: string): string {
@@ -97,12 +92,43 @@ export abstract class BaseCacheResource<T> {
     return hashedQuery
   }
 
-  private invalidate() {
-    //TODO:Clear local storage
-    this.cache?.clear()
+  private invalidate(key: string) {
+    localStorage.removeItem(key)
   }
 
   protected getPath() {
     return this.path
+  }
+
+  private setLocalStorage(key: string, data: string) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(key, data)
+    }
+  }
+
+  private getLocalStorage(key: string) {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(key)
+    } else {
+      return null
+    }
+  }
+
+  private addMetaData(data: StoreState<T[]>): string {
+    const meta: BaseCacheResourceInterface<T> = {
+      timeStamp: new Date(),
+      value: data
+    }
+
+    return JSON.stringify(meta)
+  }
+
+  private getTimeStamp(query?: string, param?: ApiQueryParams): Date | undefined {
+    const cacheString = generateCacheString({ query, param })
+    const key = this.hash(cacheString)
+
+    const data = this.getLocalStorage(key)
+
+    return data ? JSON.parse(data)?.timeStamp : undefined
   }
 }
