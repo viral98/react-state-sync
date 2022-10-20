@@ -14,7 +14,6 @@ export interface GetInterface {
   query: string
 }
 
-// Map<string, BaseCacheResourceInterface<T>>
 export abstract class BaseCacheResource<T> {
   protected path: string
   private updatedAt = 0
@@ -29,7 +28,7 @@ export abstract class BaseCacheResource<T> {
     let currentTime = 0
 
     if (timeStamp) {
-      currentTime = timeStamp.getTime()
+      currentTime = new Date(timeStamp).getTime()
     }
 
     const cacheString = generateCacheString({ query, param })
@@ -42,7 +41,6 @@ export abstract class BaseCacheResource<T> {
 
     const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
 
-    //The data is fresh
     if (isFresh && data) {
       return (JSON.parse(data) as BaseCacheResourceInterface<T>).value
     }
@@ -85,7 +83,7 @@ export abstract class BaseCacheResource<T> {
 
     const value = this.addMetaData(data)
 
-    this.setLocalStorage(key, value)
+    this.setLocalStorage(key, JSON.stringify(value))
   }
 
   private hash(query: string): string {
@@ -122,14 +120,15 @@ export abstract class BaseCacheResource<T> {
       value: data
     }
 
-    return meta.toString()
+    return JSON.stringify(meta)
   }
+
   private getTimeStamp(query?: string, param?: ApiQueryParams): Date | undefined {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
 
     const data = this.getLocalStorage(key)
 
-    return JSON.parse(data ?? '')?.timeStamp
+    return data ? JSON.parse(data)?.timeStamp : undefined
   }
 }
