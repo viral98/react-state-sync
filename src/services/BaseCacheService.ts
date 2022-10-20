@@ -20,6 +20,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     const data = this.get({ param: params, query })
 
     if (data) {
+      console.log('Turn around, local data is fresh', data)
       return data
     } else {
       const serverData = await (
@@ -28,6 +29,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
 
       this.set(serverData, query, params)
 
+      console.log('Hitting the backend server', serverData)
       return serverData
     }
   }

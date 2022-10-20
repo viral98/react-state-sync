@@ -83,7 +83,7 @@ export abstract class BaseCacheResource<T> {
 
     const value = this.addMetaData(data)
 
-    this.setLocalStorage(key, JSON.stringify(value))
+    this.setLocalStorage(key, value)
   }
 
   private hash(query: string): string {
