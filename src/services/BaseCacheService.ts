@@ -38,8 +38,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     const data = this.get({ id, param, query })
 
     if (data) {
-      //TODO: FIX THIS
-      return data as unknown as T
+      return data
     } else {
       const serverData = await (
         await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName + '/' + id, param ?? {})

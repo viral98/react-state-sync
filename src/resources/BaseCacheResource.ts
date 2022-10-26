@@ -25,7 +25,7 @@ export abstract class BaseCacheResource<T> {
     this.ttl = 3_600_000
   }
 
-  public get({ id, query, param }: GetInterface): StoreState<T[]> | null {
+  public get({ id, query, param }: GetInterface): StoreState<T> | null {
     const timeStamp = this.getTimeStamp(query, param)
     let currentTime = 0
 
@@ -51,8 +51,6 @@ export abstract class BaseCacheResource<T> {
           const singleValuedData = values[i]
 
           return singleValuedData
-        } else {
-          return null
         }
       }
     }
