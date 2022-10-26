@@ -54,9 +54,9 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
       method: 'PUT',
       body: JSON.stringify(data)
     }
-    const putData = fetch(query, requestOptions).then((response) => response.json())
+    const putData = await (await fetch(query, requestOptions)).json()
 
-    this.put(id, query, await putData, param)
+    this.put(id, query, putData, param)
   }
 
   public async delete(id: string, param?: ApiQueryParams) {
