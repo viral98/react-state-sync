@@ -67,8 +67,14 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async create(data: Partial<T>) {
-    //const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_PATH)
-    console.log(data)
-    throw new Error('Not implemented')
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }
+
+    await (await fetch(query, requestOptions)).json()
+
+    this.post(data, query)
   }
 }

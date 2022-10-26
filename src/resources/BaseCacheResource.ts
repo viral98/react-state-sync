@@ -67,11 +67,19 @@ export abstract class BaseCacheResource<T> {
     return localData !== null ? JSON.parse(localData).value : null
   }
 
-  public post(data: T, query: string, param?: ApiQueryParams): void {
+  public post(data: Partial<T>, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
+    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
 
     this.invalidate(key)
+    if (cachedData) {
+      const values = cachedData.value
+
+      values.push(data)
+      cachedData.value = values
+      this.setLocalStorage(key, JSON.stringify(cachedData))
+    }
   }
 
   public put(id: string, query: string, data: T, param?: ApiQueryParams): void {
