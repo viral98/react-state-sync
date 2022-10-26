@@ -64,8 +64,9 @@ export abstract class BaseCacheResource<T> {
     const cacheString = generateCacheString({ query, param })
 
     const hashedKey = this.hash(cacheString)
+    const localData = this.getLocalStorage(hashedKey)
 
-    return JSON.parse(this.getLocalStorage(hashedKey) ?? '').value
+    return localData !== null ? JSON.parse(localData).value : null
   }
 
   public post(data: T, query: string, param?: ApiQueryParams): void {
