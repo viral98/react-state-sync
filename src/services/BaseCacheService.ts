@@ -48,7 +48,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
   }
 
-  public async update(id: string, data: T, param: ApiQueryParams) {
+  public async update(id: string, data: T, param?: ApiQueryParams) {
     const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
     const requestOptions = {
       method: 'PUT',
