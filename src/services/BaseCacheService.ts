@@ -60,10 +60,11 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     this.put(id, query, await putData, param)
   }
 
-  public async delete(id: string) {
-    console.error(id)
+  public async delete(id: string, param?: ApiQueryParams) {
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
 
-    throw new Error('Not implemented')
+    fetch(query + '/' + id, { method: 'DELETE' })
+    this.deleteLocal(id, query, param)
   }
 
   public async create(data: Partial<T>) {

@@ -94,11 +94,22 @@ export abstract class BaseCacheResource<T> {
     }
   }
 
-  public delete(id: string, query: string, param?: ApiQueryParams): void {
+  public deleteLocal(id: string, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
+    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
 
     this.invalidate(key)
+    if (cachedData) {
+      const values = cachedData.value
+
+      for (let i = 0; i < values.length; i++) {
+        if (values[i]._id == id) {
+          cachedData.value = values.filter((value: StoreState<T[]>) => value.id !== id)
+        }
+      }
+      this.setLocalStorage(key, JSON.stringify(cachedData))
+    }
   }
 
   public async set(data: StoreState<T[]>, query: string, param?: ApiQueryParams): Promise<void> {
