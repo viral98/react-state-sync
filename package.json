@@ -13,6 +13,9 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.10.11",
     "@types/md5": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "axios": "^1.1.2",
