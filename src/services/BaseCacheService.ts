@@ -15,19 +15,19 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     this.api = api
   }
 
-  public async getAllValues(params?: ApiQueryParams): Promise<StoreState<T[]>> {
+  public async getAllValues(param?: ApiQueryParams): Promise<StoreState<T[]>> {
     const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
-    const data = this.get({ param: params, query })
+    const data = this.getAll({ query, param })
 
     if (data) {
       console.log('Turn around, local data is fresh', data)
       return data
     } else {
       const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, params ?? {})
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, param ?? {})
       ).json()
 
-      this.set(serverData, query, params)
+      this.set(serverData, query, param)
 
       console.log('Hitting the backend server', serverData)
       return serverData
@@ -38,34 +38,43 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     const data = this.get({ id, param, query })
 
     if (data) {
-      //TODO: FIX THIS
-      return data as unknown as T
+      return data
     } else {
       const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, param ?? {})
+        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName + '/' + id, param ?? {})
       ).json()
 
-      this.set(serverData, query, param)
       return serverData
     }
   }
 
-  public async update(id: string, data: T, param: ApiQueryParams) {
+  public async update(id: string, data: T, param?: ApiQueryParams) {
     const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const requestOptions = {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }
+    const putData = await (await fetch(query, requestOptions)).json()
 
-    console.log(id)
-    this.put(query, data, param)
+    this.put(id, query, putData, param)
   }
 
-  public async delete(id: string) {
-    console.error(id)
+  public async delete(id: string, param?: ApiQueryParams) {
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
 
-    throw new Error('Not implemented')
+    fetch(query + '/' + id, { method: 'DELETE' })
+    this.deleteLocal(id, query, param)
   }
 
   public async create(data: Partial<T>) {
-    //const dataToCreate = await fetch(process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_PATH)
-    console.log(data)
-    throw new Error('Not implemented')
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }
+
+    await (await fetch(query, requestOptions)).json()
+
+    this.post(data, query)
   }
 }

@@ -8,10 +8,12 @@ interface BaseCacheResourceInterface<T> {
   value: StoreState<T[]>
 }
 
-export interface GetInterface {
-  id?: string
+export interface GetAllInterface {
   param?: ApiQueryParams
   query: string
+}
+export interface GetInterface extends GetAllInterface {
+  id?: string
 }
 
 export abstract class BaseCacheResource<T> {
@@ -23,7 +25,7 @@ export abstract class BaseCacheResource<T> {
     this.ttl = 3_600_000
   }
 
-  public get({ query, param }: GetInterface): StoreState<T[]> | null {
+  public get({ id, query, param }: GetInterface): StoreState<T> | null {
     const timeStamp = this.getTimeStamp(query, param)
     let currentTime = 0
 
@@ -42,39 +44,79 @@ export abstract class BaseCacheResource<T> {
     const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
 
     if (isFresh && data) {
-      return (JSON.parse(data) as BaseCacheResourceInterface<T>).value
+      const values = JSON.parse(data).value
+
+      for (let i = 0; i < values.length; i++) {
+        if (values[i]._id === id) {
+          const singleValuedData = values[i]
+
+          return singleValuedData
+        }
+      }
     }
 
     return null
   }
 
-  public getAll(query?: ApiQueryParams): BaseCacheResourceInterface<T> {
-    const cacheString = generateCacheString({ param: query })
+  public getAll({ query, param }: GetAllInterface): StoreState<T[]> {
+    const cacheString = generateCacheString({ query, param })
 
     const hashedKey = this.hash(cacheString)
+    const localData = this.getLocalStorage(hashedKey)
 
-    return JSON.parse(this.getLocalStorage(hashedKey) ?? '')
+    return localData !== null ? JSON.parse(localData).value : null
   }
 
-  public post(data: T, query: string, param?: ApiQueryParams): void {
+  public post(data: Partial<T>, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
+    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
 
     this.invalidate(key)
+    if (cachedData) {
+      const values = cachedData.value
+
+      values.push(data)
+      cachedData.value = values
+      this.setLocalStorage(key, JSON.stringify(cachedData))
+    }
   }
 
-  public put(query: string, data: T, param?: ApiQueryParams): void {
+  public put(id: string, query: string, data: T, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
+    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
 
     this.invalidate(key)
+    if (cachedData) {
+      const values = cachedData.value
+
+      for (let i = 0; i < values.length; i++) {
+        if (values[i]._id == id) {
+          values[i] = data
+          cachedData.value = values
+        }
+      }
+      this.setLocalStorage(key, JSON.stringify(cachedData))
+    }
   }
 
-  public delete(id: string, query: string, param?: ApiQueryParams): void {
+  public deleteLocal(id: string, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
+    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
 
     this.invalidate(key)
+    if (cachedData) {
+      const values = cachedData.value
+
+      for (let i = 0; i < values.length; i++) {
+        if (values[i]._id == id) {
+          cachedData.value = values.filter((value: StoreState<T[]>) => value.id !== id)
+        }
+      }
+      this.setLocalStorage(key, JSON.stringify(cachedData))
+    }
   }
 
   public async set(data: StoreState<T[]>, query: string, param?: ApiQueryParams): Promise<void> {
