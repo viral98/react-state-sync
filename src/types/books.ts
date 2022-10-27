@@ -1,4 +1,5 @@
 export interface Book {
+  _id: string
   id: string
   title: string
   isbn: string

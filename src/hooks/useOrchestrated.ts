@@ -9,6 +9,10 @@ interface UseOrchestratedProps {
 }
 export function useOrchestrated<T extends DefaultObject>({ pathName }: UseOrchestratedProps) {
   const concreteBaseResource = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.clear()
+    }
+
     const concreteApi = api({})
 
     if (!concreteApi) {

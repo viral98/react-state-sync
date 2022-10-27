@@ -1,4 +1,4 @@
-import { ActionTypes, PutAllValuesInStore } from '../actions/BaseActions'
+import { ActionTypes, AddANewValueInStore, PutAllValuesInStore } from '../actions/BaseActions'
 import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheService } from '../services/BaseCacheService'
 
@@ -29,9 +29,16 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public post = async (data: Partial<T>) => {
-    console.error(data)
+    const newVal = await this.cacheServiceResource.create(data)
 
-    throw new Error('Not implemented')
+    if (newVal) {
+      AddANewValueInStore({
+        payload: newVal,
+        store: this.store,
+        state: this.store.getState(),
+        type: ActionTypes.POST
+      })
+    }
   }
 
   public get = async (id: string) => {

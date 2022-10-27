@@ -13,15 +13,22 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@material-ui/core": "^4.12.4",
+    "@mui/material": "^5.10.11",
+    "@mui/x-data-grid": "^5.17.8",
     "@types/md5": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "axios": "^1.1.2",
     "eslint-config-prettier": "^8.5.0",
+    "loadash": "^1.0.0",
     "md5": "^2.3.0",
     "next": "12.2.5",
     "prettier": "^2.7.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.38.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.0",
