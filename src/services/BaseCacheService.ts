@@ -77,7 +77,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
 
     const returnData = await (await this.api(query, requestOptions)).json()
 
-    this.post(returnData, query)
+    this.post(returnData.data, query)
 
     return returnData.data
   }
