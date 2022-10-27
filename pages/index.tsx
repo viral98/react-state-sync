@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useOrchestrated } from '../src/hooks/useOrchestrated'
 import { Book } from '../src/types/books'
-import { Grid, Typography } from '@mui/material'
+import { Grid, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { FormProvider, useForm } from 'react-hook-form'
+import FormInput from '../src/components/FormInput'
 
 function App() {
   const [books, setBooks] = useState([] as unknown as Book[])
-  const [mySelectedValues, setMySelectedValues] = useState([] as { title: string; id: string }[])
+  const [mySelectedValues, setMySelectedValues] = useState([] as { title: string; _id: string }[])
   const bookResource = useOrchestrated<Book>({ pathName: 'books' })
 
+  const methods = useForm<Book>()
+
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 70 },
+    { field: '_id', headerName: 'ID', width: 70 },
     { field: 'title', headerName: 'Title', width: 130 },
     { field: 'isbn', headerName: 'ISBN', width: 130 },
     {
@@ -56,15 +60,20 @@ function App() {
   const myCustomSelector = (allBooks: Book[]) => {
     setMySelectedValues(
       allBooks.map((book) => {
-        return { title: book.title, id: book._id }
+        return { title: book.title, _id: book._id }
       })
     )
   }
 
   bookResource?.getValues(myCustomSelector)
+
+  const handleSubmit = (newBook: Book) => {
+    bookResource?.post(newBook)
+  }
+
   return (
-    <Grid container height={'100vh'} width={'100vw'} rowGap={15}>
-      <Grid item xs={12}>
+    <Grid container height={'100%'} width={'100%'} rowGap={15}>
+      <Grid item xs={12} height={'20rem'}>
         <Typography variant={'h3'}>Books</Typography>
         <DataGrid
           rows={books}
@@ -76,7 +85,7 @@ function App() {
         />
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} height={'20rem'}>
         <Typography variant={'h3'}>Iterating over Selectors</Typography>
         <DataGrid
           rows={mySelectedValues}
@@ -84,7 +93,23 @@ function App() {
           pageSize={5}
           rowsPerPageOptions={[5]}
           checkboxSelection
+          getRowId={(row) => row._id}
         />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant={'h3'}>Create a book</Typography>
+        <FormProvider {...methods}>
+          <form onSubmit={methods.handleSubmit(handleSubmit)}>
+            <FormInput name={'title'} label={'Title'} required />
+            <FormInput name={'isbn'} label={'ISBN'} required />
+            <FormInput name={'author'} label={'Author'} required />
+            <FormInput name={'description'} label={'Description'} required />
+            <Button variant="contained" type="submit">
+              Submit
+            </Button>
+          </form>
+        </FormProvider>
       </Grid>
     </Grid>
   )

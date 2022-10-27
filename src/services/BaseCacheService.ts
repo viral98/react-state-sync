@@ -54,7 +54,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
       method: 'PUT',
       body: JSON.stringify(data)
     }
-    const putData = await (await fetch(query, requestOptions)).json()
+    const putData = await (await this.api(query, requestOptions)).json()
 
     this.put(id, query, putData, param)
   }
@@ -66,15 +66,19 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     this.deleteLocal(id, query, param)
   }
 
-  public async create(data: Partial<T>) {
+  public async create(data: Partial<T>): Promise<T> {
     const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+
     const requestOptions = {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
     }
 
-    await (await fetch(query, requestOptions)).json()
+    const returnData = await (await this.api(query, requestOptions)).json()
 
-    this.post(data, query)
+    this.post(returnData, query)
+
+    return returnData.data
   }
 }

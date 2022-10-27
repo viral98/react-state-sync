@@ -19,13 +19,7 @@ export function baseReducer<Shape extends DefaultObject>(
       })
 
     case ActionTypes.POST: {
-      if (Array.isArray(state)) {
-        state.push(action.payload)
-      } else {
-        throw new Error("The base shape isn't an array")
-      }
-
-      return state
+      return [...state, action.payload]
     }
     case ActionTypes.DELETE:
       return state.filter((obj) => obj.id !== action.payload.id)
