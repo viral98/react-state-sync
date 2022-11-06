@@ -305,12 +305,6 @@
         }
       }
 
-      .updates,
-      .university,
-      .help {
-        display: inline-flex;
-      }
-
       .userMenuToggle {
         max-width: 5rem;
         margin-right: 0;
@@ -326,14 +320,6 @@
 
       .miniProfile {
         display: flex;
-      }
-
-      :global .MuiMenuItem-root {
-        &.updates,
-        &.university,
-        &.help {
-          display: none;
-        }
       }
     }
   }

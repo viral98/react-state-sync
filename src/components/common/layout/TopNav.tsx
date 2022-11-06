@@ -1,6 +1,5 @@
-import { useState, useContext, useRef, useEffect } from 'react'
-import clsx from 'clsx'
-import { AppBar, Avatar, AvatarGroup, Button, IconButton, Toolbar, Tooltip } from '@mui/material'
+import { useRef } from 'react'
+import { AppBar, Avatar, Button, Toolbar } from '@mui/material'
 import { ArrowDropDown } from '@mui/icons-material'
 
 import styles from './TopNav.module.scss'
