@@ -6,19 +6,37 @@ import CardMedia from '@mui/material/CardMedia'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
+export interface Image {
+  url: string
+}
 interface ImgMediaCardProps {
   title: string
   description?: string
+  images?: Image[]
 }
-export default function ImgMediaCard({ title, description }: ImgMediaCardProps) {
+export default function ImgMediaCard({ title, description, images }: ImgMediaCardProps) {
+  const getRandomMediaImage = (images?: Image[]): string => {
+    let imageUrls = []
+
+    if (!images || images.length === 0) {
+      imageUrls = [
+        '/static/images/book-1.jpg',
+        '/static/images/book-2.jpeg',
+        '/static/images/book-3.jpeg',
+        '/static/images/book-4.jpeg'
+      ]
+    } else {
+      imageUrls = images.map((image) => image.url)
+    }
+
+    const randomIndex = Math.floor(Math.random() * imageUrls.length)
+
+    return imageUrls[randomIndex]
+  }
+
   return (
     <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        component="img"
-        alt="green iguana"
-        height="140"
-        image="/static/images/cards/contemplative-reptile.jpg"
-      />
+      <CardMedia component="img" alt={title} height="350" image={getRandomMediaImage(images)} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {title}
