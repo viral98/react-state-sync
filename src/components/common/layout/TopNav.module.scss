@@ -1,0 +1,340 @@
+@import 'styles/variables';
+.topNav {
+  :global .MuiToolbar-root {
+    z-index: 1101;
+    justify-content: right;
+    height: $top-nav-height;
+    background: $white;
+
+    .sideNavToggle {
+      opacity: 1;
+      overflow: hidden;
+      transition: padding 0.3s ease, max-width 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-left: -0.5rem;
+      min-width: unset;
+      max-width: 5rem;
+      padding: 0.375rem 0.5rem;
+
+      .logo {
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid $white;
+        border-radius: 0.25rem;
+        width: 2rem;
+        height: 2rem;
+        background: $light-grey;
+        color: $white;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+
+    .search {
+      flex-grow: 1;
+      justify-content: flex-end;
+      display: flex;
+      overflow: hidden;
+      transition: max-width 0.3s ease, opacity 0.3s ease;
+      max-width: 100%;
+
+      .backdrop {
+        flex-grow: 1;
+        display: flex;
+        transition: background 0.3s ease, max-width 0.3s ease, opacity 0.3s ease;
+        border-radius: 0.25rem;
+        max-width: 2.625rem;
+        background: transparent;
+
+        .MuiIconButton-root {
+          transition: margin 0.3s ease;
+          margin: (-0.625rem) 0 -0.625rem -0.375rem;
+        }
+
+        .MuiTextField-root {
+          opacity: 0;
+          max-width: 0;
+
+          .MuiInput-root {
+            &:before,
+            &:after {
+              content: none;
+            }
+          }
+        }
+      }
+    }
+
+    .updates,
+    .university,
+    .help {
+      display: none;
+    }
+
+    .userMenuToggle {
+      flex-grow: 1;
+      opacity: 1;
+      overflow: hidden;
+      transition: padding 0.3s ease, max-width 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-right: -0.8125rem;
+      min-width: unset;
+      max-width: 5rem;
+      padding: 0.375rem 0.5rem;
+      color: rgba($black, 0.54);
+
+      .avatar {
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: margin 0.3s ease;
+        margin-right: 0.5rem;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        background: $light-grey;
+        color: $white;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      h6 {
+        flex-grow: 1;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-width 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+        margin: 0;
+        max-width: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 2rem;
+        color: rgba($black, 0.87);
+        text-transform: none;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      :global .MuiSvgIcon-root {
+        opacity: 1;
+        overflow: hidden;
+        transition: max-width 0.3s ease, opacity 0.3s ease;
+        color: currentColor;
+      }
+    }
+
+    .closeAll {
+      opacity: 0;
+      overflow: hidden;
+      transition: padding 0.3s ease, max-width 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin: 0;
+      max-width: 0;
+      padding: 0;
+    }
+  }
+
+  .userMenu {
+    z-index: 1100;
+
+    :global .MuiPaper-root {
+      width: 100vw;
+    }
+
+    :global .MuiList-root {
+      padding: 0 0 1rem;
+    }
+
+    .miniProfile {
+      flex-direction: column;
+      display: none;
+      padding: 1rem 0 0.625rem;
+      align-items: center;
+
+      .avatar {
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        border-radius: 50%;
+        width: 3.75rem;
+        height: 3.75rem;
+        background: $light-grey;
+        color: $white;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+
+        svg {
+          width: 2.75rem;
+          height: 2.75rem;
+        }
+      }
+
+      h6 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 500;
+        line-height: 2rem;
+      }
+    }
+
+    :global .MuiMenuItem-root {
+      min-height: unset;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .logoutContainer {
+      justify-content: center;
+      display: flex;
+      margin-top: 1.25rem;
+    }
+  }
+
+  // Mobile-Only states
+  @media screen and (max-width: 48em) {
+    &.searchOpen :global .MuiToolbar-root {
+      .sideNavToggle,
+      .userMenuToggle {
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        max-width: 0;
+        padding: 0;
+      }
+
+      .search .backdrop {
+        background: $primary-faint;
+        max-width: 100%;
+
+        :global .MuiIconButton-root {
+          margin-right: -0.375rem;
+        }
+
+        :global .MuiTextField-root {
+          opacity: 1;
+          max-width: 100%;
+        }
+      }
+
+      .closeAll {
+        opacity: 1;
+        margin-right: -0.8125rem;
+        max-width: 3rem;
+        padding: 0.75rem;
+      }
+    }
+
+    &.menuOpen :global .MuiToolbar-root {
+      .sideNavToggle {
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        max-width: 0;
+        padding: 0;
+      }
+
+      .search,
+      .backdrop {
+        opacity: 0;
+        max-width: 0;
+      }
+
+      .userMenuToggle {
+        margin-right: 0;
+        margin-left: -0.5rem;
+        max-width: 100%;
+
+        h6 {
+          opacity: 1;
+          max-width: 100%;
+        }
+
+        > .MuiSvgIcon-root {
+          opacity: 0;
+          max-width: 0;
+        }
+      }
+
+      .closeAll {
+        opacity: 1;
+        margin-right: -0.8125rem;
+        max-width: 3rem;
+        padding: 0.75rem;
+      }
+    }
+  }
+
+  // Desktop Styles
+  @media screen and (min-width: 48em) {
+    .closeAll {
+      display: none;
+    }
+    :global .MuiToolbar-root {
+      height: 5rem;
+
+      .sideNavToggle {
+        display: none;
+      }
+
+      .search {
+        padding-right: 0.75rem;
+
+        .backdrop {
+          max-width: 12.5rem;
+          background: $primary-faint;
+
+          :global .MuiIconButton-root {
+            margin-right: -0.375rem;
+          }
+
+          :global .MuiTextField-root {
+            opacity: 1;
+            max-width: 100%;
+          }
+        }
+      }
+
+      .updates,
+      .university,
+      .help {
+        display: inline-flex;
+      }
+
+      .userMenuToggle {
+        max-width: 5rem;
+        margin-right: 0;
+      }
+    }
+
+    .userMenu {
+      :global .MuiPaper-root {
+        position: relative;
+        width: 20rem;
+        right: 1.5rem;
+      }
+
+      .miniProfile {
+        display: flex;
+      }
+
+      :global .MuiMenuItem-root {
+        &.updates,
+        &.university,
+        &.help {
+          display: none;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+// Colors
+$white: #ffffff;
+$black: #000000;
+$light-grey: #bdbdbd;
+$primary-dark: #0b183e;
+$primary-main: #4165f4;
+$primary-main-light: #4165f480;
+$primary-main-hover: #4165f414;
+$primary-faint: #ebf1ff;
+$blue-gray-50: #eceff1;
+$blue-gray-300: #e0e0e0;
+$error-main: #f44336;
+
+$et-blue-900: #0b183e;
+$grey-400: #bdbdbd;
+$success-main: #4caf50;
+
+$lead-main: #bbdefb;
+$tentative-main: #ffe082;
+$definite-main: #c5e1a5;
+$lost-main: #ffab91;
+
+$lead-font: #1565c0;
+$tentative-font: #e65100;
+$definite-font: #33691e;
+$lost-font: #bf360c;
+
+$edit-hover: #0000000a;
+$delete-hover: #f4433614;
+
+//text-related variables
+$text-light-mode-primary: rgba(0, 0, 0, 0.87);
+$text-light-mode-secondary: rgba(0, 0, 0, 0.6);
+
+$action-icon: #0000008a;
+$action-light-mode: #0000000a;
+$text-light-mode: #00000061;
+$border-light-mode: #0000003b;
+
+//Spacing
+$top-nav-height: 3.75rem;
+$space-image-height: 15rem;
+$space-image-width: 16rem;
+$base-grid: 0.25rem;
+$desktop-cutoff: 48em;
+
+$xs-sm-padding: calc(1 * #{$base-grid}); //4px
+$sm-padding: calc(2 * #{$base-grid}); //8px
+$md-padding: calc(4 * #{$base-grid}); //16px
+$lg-padding: calc(5 * #{$base-grid}); //20px
+$xl-padding: calc(6 * #{$base-grid}); //24px
+$xxl-padding: calc(8 * #{$base-grid}); //32px
+$xxxl-padding: calc(10 * #{$base-grid}); //40px
+
+// table-stuff
+%option-label {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+%icon-button-container {
+  height: calc(12 * #{$base-grid});
+  width: calc(12 * #{$base-grid});
+}
