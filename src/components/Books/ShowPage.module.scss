@@ -1,0 +1,9 @@
+@import 'styles/variables';
+
+.showPage {
+  margin-top: $top-nav-height;
+  &__cardsContainer {
+    height: 50rem;
+    padding: 5rem;
+  }
+}
