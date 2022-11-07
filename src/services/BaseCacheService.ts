@@ -34,7 +34,9 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
   }
 
-  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | void> {
+  public async getSingleValue(id: string, param?: ApiQueryParams): Promise<T> {
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+
     const data = this.get({ id, param, query })
 
     if (data) {

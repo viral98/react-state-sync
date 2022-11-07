@@ -1,7 +1,7 @@
-import { BooksShowPage } from '../../src/components/Books/ShowPage'
+import { BookListView } from '../../src/components/Books/ShowPage'
 
 function Books() {
-  return <BooksShowPage />
+  return <BookListView />
 }
 
 export default Books

@@ -12,9 +12,17 @@ export interface Image {
 interface ImgMediaCardProps {
   title: string
   description?: string
+  id: string
   images?: Image[]
+  learnMoreFunction?: (id: string) => void
 }
-export default function ImgMediaCard({ title, description, images }: ImgMediaCardProps) {
+export default function ImgMediaCard({
+  title,
+  description,
+  images,
+  learnMoreFunction,
+  id
+}: ImgMediaCardProps) {
   const getRandomMediaImage = (images?: Image[]): string => {
     let imageUrls = []
 
@@ -34,6 +42,12 @@ export default function ImgMediaCard({ title, description, images }: ImgMediaCar
     return imageUrls[randomIndex]
   }
 
+  const handleLearnMore = () => {
+    if (learnMoreFunction) {
+      learnMoreFunction(id)
+    }
+  }
+
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia component="img" alt={title} height="350" image={getRandomMediaImage(images)} />
@@ -47,7 +61,9 @@ export default function ImgMediaCard({ title, description, images }: ImgMediaCar
       </CardContent>
       <CardActions>
         <Button size="small">Add To Cart</Button>
-        <Button size="small">Learn More</Button>
+        <Button size="small" onClick={handleLearnMore}>
+          Learn More
+        </Button>
       </CardActions>
     </Card>
   )
