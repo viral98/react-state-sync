@@ -1,4 +1,10 @@
-import { ActionTypes, AddANewValueInStore, PutAllValuesInStore } from '../actions/BaseActions'
+import {
+  ActionTypes,
+  AddANewValueInStore,
+  DeleteValueFromStore,
+  PutAllValuesInStore,
+  UpdateValueInStore
+} from '../actions/BaseActions'
 import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheService } from '../services/BaseCacheService'
 
@@ -42,21 +48,33 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public get = async (id: string) => {
-    console.error(id)
+    const record = await this.cacheServiceResource.getSingleValue(id)
 
-    throw new Error('Not implemented')
+    return record
   }
 
-  public put = async (id: string, data: Partial<T>) => {
-    console.error(id, data)
+  public put = async (id: string, data: T) => {
+    const updatedValue = await this.cacheServiceResource.update(id, data)
 
-    throw new Error('Not implemented')
+    if (updatedValue) {
+      UpdateValueInStore({
+        payload: updatedValue,
+        store: this.store,
+        state: this.store.getState(),
+        type: ActionTypes.UPDATE
+      })
+    }
   }
 
   public delete = async (id: string) => {
-    console.error(id)
+    await this.cacheServiceResource.delete(id)
 
-    throw new Error('Not implemented')
+    DeleteValueFromStore({
+      payload: { _id: id } as StoreState<T>,
+      store: this.store,
+      state: this.store.getState(),
+      type: ActionTypes.DELETE
+    })
   }
 
   public getValues = (myCallBack: (state: T[]) => void) => {
@@ -64,10 +82,10 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public getValue = (inputKey: keyof T, id: string) => {
-    return this.store.getState().find((object) => object.id === id)?.[inputKey]
+    return this.store.getState().find((object) => object._id === id)?.[inputKey]
   }
 
   public getObject = (id: string) => {
-    return this.store.getState().find((object) => object.id === id)
+    return this.store.getState().find((object) => object._id === id)
   }
 }

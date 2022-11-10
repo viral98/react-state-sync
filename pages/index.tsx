@@ -11,7 +11,9 @@ function App() {
   const [mySelectedValues, setMySelectedValues] = useState([] as { title: string; _id: string }[])
   const bookResource = useOrchestrated<Book>({ pathName: 'books' })
 
-  const methods = useForm<Book>()
+  const createBookMethods = useForm<Book>()
+
+  const updateBookMethods = useForm<Book>()
 
   const columns: GridColDef[] = [
     { field: '_id', headerName: 'ID', width: 70 },
@@ -65,10 +67,25 @@ function App() {
     )
   }
 
+  useEffect(() => {
+    bookResource?.getValues(myCustomSelector)
+  }, [bookResource])
   bookResource?.getValues(myCustomSelector)
 
-  const handleSubmit = (newBook: Book) => {
+  const handleCreateNewBookSubmit = (newBook: Book) => {
     bookResource?.post(newBook)
+  }
+
+  const handleUpdateBookSubmit = (updatedBook: Book) => {
+    updatedBook._id = books[0]._id
+    updatedBook.author = books[0].author
+    updatedBook.description = books[0].description
+
+    bookResource?.put(updatedBook._id, updatedBook)
+  }
+
+  const deleteFirstBook = () => {
+    bookResource?.delete(books[0]._id)
   }
 
   return (
@@ -99,8 +116,8 @@ function App() {
 
       <Grid item xs={12}>
         <Typography variant={'h3'}>Create a book</Typography>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(handleSubmit)}>
+        <FormProvider {...createBookMethods}>
+          <form onSubmit={createBookMethods.handleSubmit(handleCreateNewBookSubmit)}>
             <FormInput name={'title'} label={'Title'} required />
             <FormInput name={'isbn'} label={'ISBN'} required />
             <FormInput name={'author'} label={'Author'} required />
@@ -110,6 +127,27 @@ function App() {
             </Button>
           </form>
         </FormProvider>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant={'h3'}>Change the title of the first book</Typography>
+        <FormProvider {...updateBookMethods}>
+          <form onSubmit={updateBookMethods.handleSubmit(handleUpdateBookSubmit)}>
+            <FormInput name={'title'} label={'Title'} required />
+
+            <Button variant="contained" type="submit">
+              Update
+            </Button>
+          </form>
+        </FormProvider>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant={'h3'}>Delete the first book</Typography>
+
+        <Button variant="contained" onClick={deleteFirstBook}>
+          Delete
+        </Button>
       </Grid>
     </Grid>
   )

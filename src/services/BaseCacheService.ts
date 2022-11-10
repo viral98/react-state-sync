@@ -34,7 +34,8 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
   }
 
-  public async getSingleValue(param: ApiQueryParams, id: string, query: string): Promise<T | void> {
+  public async getSingleValue(id: string, param?: ApiQueryParams): Promise<T> {
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
     const data = this.get({ id, param, query })
 
     if (data) {
@@ -49,14 +50,17 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async update(id: string, data: T, param?: ApiQueryParams) {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName + '/' + id
     const requestOptions = {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
     }
     const putData = await (await this.api(query, requestOptions)).json()
 
-    this.put(id, query, putData, param)
+    this.put(id, process.env.NEXT_PUBLIC_API_URL + this.pathName, putData, param)
+
+    return putData.data
   }
 
   public async delete(id: string, param?: ApiQueryParams) {
