@@ -84,6 +84,10 @@ function App() {
     bookResource?.put(updatedBook._id, updatedBook)
   }
 
+  const deleteFirstBook = () => {
+    bookResource?.delete(books[0]._id)
+  }
+
   return (
     <Grid container height={'100%'} width={'100%'} rowGap={15}>
       <Grid item xs={12} height={'20rem'}>
@@ -132,10 +136,18 @@ function App() {
             <FormInput name={'title'} label={'Title'} required />
 
             <Button variant="contained" type="submit">
-              Submit
+              Update
             </Button>
           </form>
         </FormProvider>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant={'h3'}>Delete the first book</Typography>
+
+        <Button variant="contained" onClick={deleteFirstBook}>
+          Delete
+        </Button>
       </Grid>
     </Grid>
   )
