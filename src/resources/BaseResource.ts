@@ -1,6 +1,7 @@
 import {
   ActionTypes,
   AddANewValueInStore,
+  DeleteValueFromStore,
   PutAllValuesInStore,
   UpdateValueInStore
 } from '../actions/BaseActions'
@@ -66,9 +67,14 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public delete = async (id: string) => {
-    console.error(id)
+    await this.cacheServiceResource.delete(id)
 
-    throw new Error('Not implemented')
+    DeleteValueFromStore({
+      payload: { _id: id } as StoreState<T>,
+      store: this.store,
+      state: this.store.getState(),
+      type: ActionTypes.DELETE
+    })
   }
 
   public getValues = (myCallBack: (state: T[]) => void) => {
