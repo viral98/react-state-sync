@@ -1,4 +1,9 @@
-import { ActionTypes, AddANewValueInStore, PutAllValuesInStore } from '../actions/BaseActions'
+import {
+  ActionTypes,
+  AddANewValueInStore,
+  PutAllValuesInStore,
+  UpdateValueInStore
+} from '../actions/BaseActions'
 import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheService } from '../services/BaseCacheService'
 
@@ -47,10 +52,17 @@ export class BaseResource<T extends DefaultObject> {
     return record
   }
 
-  public put = async (id: string, data: Partial<T>) => {
-    console.error(id, data)
+  public put = async (id: string, data: T) => {
+    const updatedValue = await this.cacheServiceResource.update(id, data)
 
-    throw new Error('Not implemented')
+    if (updatedValue) {
+      UpdateValueInStore({
+        payload: updatedValue,
+        store: this.store,
+        state: this.store.getState(),
+        type: ActionTypes.UPDATE
+      })
+    }
   }
 
   public delete = async (id: string) => {
@@ -64,10 +76,10 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public getValue = (inputKey: keyof T, id: string) => {
-    return this.store.getState().find((object) => object.id === id)?.[inputKey]
+    return this.store.getState().find((object) => object._id === id)?.[inputKey]
   }
 
   public getObject = (id: string) => {
-    return this.store.getState().find((object) => object.id === id)
+    return this.store.getState().find((object) => object._id === id)
   }
 }

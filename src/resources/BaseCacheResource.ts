@@ -112,7 +112,7 @@ export abstract class BaseCacheResource<T> {
 
       for (let i = 0; i < values.length; i++) {
         if (values[i]._id == id) {
-          cachedData.value = values.filter((value: StoreState<T[]>) => value.id !== id)
+          cachedData.value = values.filter((value: StoreState<T[]>) => value._id !== id)
         }
       }
       this.setLocalStorage(key, JSON.stringify(cachedData))
