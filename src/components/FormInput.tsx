@@ -11,6 +11,7 @@ type FormInputProps = {
   margin?: 'dense' | 'normal' | 'none'
   type?: React.InputHTMLAttributes<unknown>['type']
   disabled?: boolean
+  defaultValue?: string
 }
 export function FormInput({
   name,
@@ -20,13 +21,15 @@ export function FormInput({
   margin,
   register,
   type,
-  disabled
+  disabled,
+  defaultValue
 }: FormInputProps): JSX.Element {
   const { control } = useFormContext()
 
   return (
     <React.Fragment>
       <Controller
+        defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, ref, value } }) => (
           <TextField
             required={required}
@@ -40,6 +43,7 @@ export function FormInput({
             value={value}
             type={type}
             disabled={disabled}
+            defaultValue={defaultValue}
             multiline={type === 'textarea'}
             rows={type === 'textarea' ? 4 : 1}
           />

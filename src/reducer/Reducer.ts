@@ -10,8 +10,9 @@ export function baseReducer<Shape extends DefaultObject>(
       return action.payload
 
     case ActionTypes.UPDATE:
+      console.log('stateItem', state, action.payload)
       return state.map((stateItem: StoreState<Shape>) => {
-        if (stateItem.id === action.payload.id) {
+        if (stateItem._id === action.payload._id) {
           return action.payload
         } else {
           return stateItem
@@ -22,7 +23,7 @@ export function baseReducer<Shape extends DefaultObject>(
       return [...state, action.payload]
     }
     case ActionTypes.DELETE:
-      return state.filter((obj) => obj.id !== action.payload.id)
+      return state.filter((obj) => obj._id !== action.payload._id)
 
     default:
       console.error('Action must be a predefined actionType.')

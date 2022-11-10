@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 export interface DefaultObject {
-  id: string
+  _id: string
 }
 export type StoreState<T> = T & DefaultObject
 
