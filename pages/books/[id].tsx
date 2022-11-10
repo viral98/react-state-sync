@@ -1,7 +1,7 @@
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import ImgMediaCard from '../../src/components/common/ImgMediaCard'
+import { getRandomMediaImage } from '../../src/components/common/ImgMediaCard'
 import { useOrchestrated } from '../../src/hooks/useOrchestrated'
 import { Book } from '../../src/types/books'
 
@@ -30,9 +30,28 @@ export function BookShowPage() {
   }
 
   return (
-    <Grid container>
+    <Grid container padding={10}>
       <Grid item xs={12}>
-        <ImgMediaCard title={book.title} description={book?.description} id={book._id} />
+        <Typography variant="h1">{book.title}</Typography>
+      </Grid>
+      <Grid item container xs={12}>
+        <Grid item xs={12} sm={6}>
+          <img alt={book.title} height="350" src={getRandomMediaImage()} />
+        </Grid>
+        <Grid container item xs={12} sm={6} rowGap={0}>
+          <Grid item xs={12}>
+            <Typography variant="h5">Description</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body1">{book.description}</Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="h5">Author</Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="body1">{book.author}</Typography>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   )
