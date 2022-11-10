@@ -42,9 +42,9 @@ export class BaseResource<T extends DefaultObject> {
   }
 
   public get = async (id: string) => {
-    console.error(id)
+    const record = await this.cacheServiceResource.getSingleValue(id)
 
-    throw new Error('Not implemented')
+    return record
   }
 
   public put = async (id: string, data: Partial<T>) => {
