@@ -88,4 +88,8 @@ export class BaseResource<T extends DefaultObject> {
   public getObject = (id: string) => {
     return this.store.getState().find((object) => object._id === id)
   }
+
+  public getStore = () => {
+    return this.store
+  }
 }

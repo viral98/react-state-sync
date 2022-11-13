@@ -10,7 +10,7 @@
     "check-format": "prettier --check .",
     "check-lint": "eslint \"./src/**/*.{js,ts,tsx}\" --max-warnings 0",
     "prettier": "prettier --write .",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "dependencies": {
     "@types/md5": "^2.3.2",
