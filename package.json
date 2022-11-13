@@ -26,7 +26,6 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.20.2",
     "@jest/globals": "^29.3.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
