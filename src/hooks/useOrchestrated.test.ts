@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { ActionTypes, PutAllValuesInStore, UpdateValueInStore } from '../actions/BaseActions'
 import { StoreState } from '../createStore'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const useOrchestrated = require('../hooks/useOrchestrated')
+const { useOrchestrated } = require('../hooks/useOrchestrated')
 
 describe('the useOrchestrated hook', () => {
   it('Calls the API only once', async () => {

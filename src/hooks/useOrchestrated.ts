@@ -28,4 +28,4 @@ export function useOrchestrated<T extends DefaultObject>({ pathName }: UseOrches
   return concreteBaseResource
 }
 
-module.exports = useOrchestrated
+module.exports = { useOrchestrated }
