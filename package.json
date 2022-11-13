@@ -1,7 +1,6 @@
 {
-  "name": "react-state-sync",
+  "name": "@viral98/react-state-sync",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
