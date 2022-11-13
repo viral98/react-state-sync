@@ -10,7 +10,6 @@ export function baseReducer<Shape extends DefaultObject>(
       return action.payload
 
     case ActionTypes.UPDATE:
-      console.log('stateItem', state, action.payload)
       return state.map((stateItem: StoreState<Shape>) => {
         if (stateItem._id === action.payload._id) {
           return action.payload

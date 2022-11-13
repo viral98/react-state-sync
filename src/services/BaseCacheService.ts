@@ -16,16 +16,14 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async getAllValues(param?: ApiQueryParams): Promise<StoreState<T[]>> {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const query = this.pathName
     const data = this.getAll({ query, param })
 
     if (data) {
       console.log('Turn around, local data is fresh', data)
       return data
     } else {
-      const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName, param ?? {})
-      ).json()
+      const serverData = await (await this.api(this.pathName, param ?? {})).json()
 
       this.set(serverData, query, param)
 
@@ -35,22 +33,20 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   }
 
   public async getSingleValue(id: string, param?: ApiQueryParams): Promise<T> {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const query = this.pathName
     const data = this.get({ id, param, query })
 
     if (data) {
       return data
     } else {
-      const serverData = await (
-        await this.api(process.env.NEXT_PUBLIC_API_URL + this.pathName + '/' + id, param ?? {})
-      ).json()
+      const serverData = await (await this.api(this.pathName + '/' + id, param ?? {})).json()
 
       return serverData
     }
   }
 
   public async update(id: string, data: T, param?: ApiQueryParams) {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName + '/' + id
+    const query = this.pathName + '/' + id
     const requestOptions = {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -58,20 +54,20 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
     const putData = await (await this.api(query, requestOptions)).json()
 
-    this.put(id, process.env.NEXT_PUBLIC_API_URL + this.pathName, putData, param)
+    this.put(id, this.pathName, putData, param)
 
     return putData.data
   }
 
   public async delete(id: string, param?: ApiQueryParams) {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const query = this.pathName
 
     fetch(query + '/' + id, { method: 'DELETE' })
     this.deleteLocal(id, query, param)
   }
 
   public async create(data: Partial<T>): Promise<T> {
-    const query = process.env.NEXT_PUBLIC_API_URL + this.pathName
+    const query = this.pathName
 
     const requestOptions = {
       method: 'POST',
