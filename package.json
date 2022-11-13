@@ -1,6 +1,6 @@
 {
   "name": "@viral98/react-state-sync",
-  "version": "0.1.4",
+  "version": "0.1.7",
   "main": "./src/hooks/useOrchestrated.ts",
   "scripts": {
     "dev": "next dev",
