@@ -1,7 +1,29 @@
 {
   "name": "@viral98/react-state-sync",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "main": "./src/hooks/useOrchestrated.ts",
+  "author": {
+    "name": "Viral Tagdiwala",
+    "email": "tagdiwalaviral@gmail.com",
+    "url": "https://www.linkedin.com/in/viraltagdiwala/"
+  },
+  "contributors": [
+    {
+      "name": " Artik Bharoliya",
+      "email": "artikbharoliya7@gmail.com",
+      "url": "https://github.com/artikbharoliya"
+    },
+    {
+      "name": "Dhwanil Shah",
+      "email": "dhwanil.shah00@gmail.com",
+      "url": "https://github.com/dhwanil005"
+    },
+    {
+      "name": "Parth Patel",
+      "email": "pjp9443@gmail.com",
+      "url": "https://github.com/pparth9199"
+    }
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
