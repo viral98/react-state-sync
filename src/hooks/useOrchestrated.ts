@@ -4,10 +4,7 @@ import { BaseResource } from '../resources/BaseResource'
 import { BaseCacheService } from '../services/BaseCacheService'
 import api from '../utils/api'
 
-interface UseOrchestratedProps {
-  pathName: string
-}
-export function useOrchestrated<T extends DefaultObject>({ pathName }: UseOrchestratedProps) {
+export function useOrchestrated<T extends DefaultObject>({ pathName }: { pathName: string }) {
   const concreteBaseResource = useMemo(() => {
     if (typeof window !== 'undefined') {
       localStorage.clear()
@@ -28,4 +25,4 @@ export function useOrchestrated<T extends DefaultObject>({ pathName }: UseOrches
   return concreteBaseResource
 }
 
-module.exports = useOrchestrated
+module.exports = { useOrchestrated }
