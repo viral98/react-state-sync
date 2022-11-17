@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { Book } from '../types/books'
 import { renderHook } from '@testing-library/react'
 import { ActionTypes, PutAllValuesInStore, UpdateValueInStore } from '../actions/BaseActions'
@@ -13,6 +15,7 @@ describe('the useOrchestrated hook', () => {
       })
     ) as jest.Mock
 
+    // @ts-ignore
     const { result } = renderHook(() => useOrchestrated<Book>({ pathName: 'books' }))
 
     for (let i = 0; i < 1000; i++) {
@@ -23,6 +26,10 @@ describe('the useOrchestrated hook', () => {
   })
 
   it('Can perform multiple dispatches', async () => {
+    /**  Since useOrchestrated has been exported as a module, and we are using require to import it,
+        We do not get the correct types back*/
+
+    // @ts-ignore
     const { result } = renderHook(() => useOrchestrated<Book>({ pathName: 'books' }))
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

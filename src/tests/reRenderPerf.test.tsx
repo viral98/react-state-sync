@@ -1,15 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Book } from '../types/books'
-import { render, renderHook, waitFor } from '@testing-library/react'
-import { ActionTypes, PutAllValuesInStore, UpdateValueInStore } from '../actions/BaseActions'
+import { render, waitFor, act } from '@testing-library/react'
 import React, { useState, useEffect, useRef } from 'react'
-import { act } from 'react-dom/test-utils'
-import ReactDOM from 'react-dom'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { useOrchestrated } = require('../hooks/useOrchestrated')
 
 interface TestComponentProps {
-  selectedValues: Partial<Book[]>
+  selectedValues: { title: string }[]
 }
 
 function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
@@ -18,8 +16,6 @@ function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
   useEffect(() => {
     count.current += 1
   }, [])
-
-  console.log(selectedValues)
 
   return (
     <React.Fragment>
@@ -32,6 +28,7 @@ function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
 function TestComponent() {
   const [mySelectedValues, setMySelectedValues] = useState([] as { title: string }[])
 
+  // @ts-ignore
   const bookResource = useOrchestrated<Book>({
     pathName: 'https://react-state-sync-serverless.vercel.app/api/books'
   })
@@ -60,13 +57,13 @@ function TestComponent() {
     bookResource?.getValues(myCustomSelector)
   }, [bookResource])
 
-  const callISBNUpdate = () => {
-    bookResource.update({ _id: '1', isbn: 'updated' })
-  }
+  // const callISBNUpdate = () => {
+  //   bookResource.update({ _id: '1', isbn: 'updated' })
+  // }
 
-  const callTitleUpdate = () => {
-    bookResource.update({ _id: '1', title: 'updated' })
-  }
+  // const callTitleUpdate = () => {
+  //   bookResource.update({ _id: '1', title: 'updated' })
+  // }
 
   return (
     <>
