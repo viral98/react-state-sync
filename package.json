@@ -1,6 +1,6 @@
 {
   "name": "@viral98/react-state-sync",
-  "version": "0.1.91",
+  "version": "0.1.92",
   "main": "./src/hooks/useOrchestrated.ts",
   "author": {
     "name": "Viral Tagdiwala",
