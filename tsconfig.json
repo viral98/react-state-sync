@@ -16,6 +16,6 @@
     "moduleResolution": "node",
     "declaration": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/tests/reRenderPerf.test.jsx"],
   "exclude": ["node_modules"]
 }

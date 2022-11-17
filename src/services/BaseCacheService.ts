@@ -28,7 +28,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
       this.set(serverData, query, param)
 
       console.log('Hitting the backend server', serverData)
-      return serverData
+      return serverData.data
     }
   }
 
