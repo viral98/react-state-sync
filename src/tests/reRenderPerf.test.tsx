@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Book } from '../types/books'
-import { render, waitFor, act } from '@testing-library/react'
+import { render, waitFor, act, fireEvent } from '@testing-library/react'
 import React, { useState, useEffect, useRef } from 'react'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -45,9 +45,7 @@ function TestComponent() {
 
   useEffect(() => {
     async function fetchBooks() {
-      await act(async () => {
-        await bookResource.getAll()
-      })
+      await bookResource.getAll()
     }
 
     fetchBooks()
@@ -57,16 +55,18 @@ function TestComponent() {
     bookResource?.getValues(myCustomSelector)
   }, [bookResource])
 
-  // const callISBNUpdate = () => {
-  //   bookResource.update({ _id: '1', isbn: 'updated' })
-  // }
+  const callISBNUpdate = async () => {
+    await bookResource.put(2, { _id: '2', isbn: 'updated' })
+  }
 
-  // const callTitleUpdate = () => {
-  //   bookResource.update({ _id: '1', title: 'updated' })
-  // }
+  const callTitleUpdate = async () => {
+    await bookResource.put(1, { _id: '1', title: 'updated' })
+  }
 
   return (
     <>
+      <button data-testid="update-isbn" onClick={callISBNUpdate} />
+      <button data-testid="update-title" onClick={callTitleUpdate} />
       <ChildComponent selectedValues={mySelectedValues} />
     </>
   )
@@ -74,26 +74,62 @@ function TestComponent() {
 
 describe('the page relying on selector', () => {
   it('Re-renders only once', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            data: [
-              {
+    global.fetch = jest.fn((url: string) => {
+      if (url === 'https://react-state-sync-serverless.vercel.app/api/books') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  title: 'The Great Gatsby'
+                }
+              ]
+            })
+        })
+      } else if (url === 'https://react-state-sync-serverless.vercel.app/api/books/1') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
                 _id: '1',
-                title: 'The Great Gatsby'
+                title: 'updated'
               }
-            ]
-          })
-      })
-    ) as jest.Mock
+            })
+        })
+      } else {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
+                _id: '1',
+                isbn: 'updated'
+              }
+            })
+        })
+      }
+    }) as jest.Mock
 
-    const { getByTestId } = render(<TestComponent />)
+    const { getByTestId, rerender } = render(<TestComponent />)
+
+    const isbnButton = getByTestId('update-isbn')
+    const titleButton = getByTestId('update-title')
 
     expect(getByTestId('count').textContent).toBe('1')
 
     await waitFor(() => {
       expect(getByTestId('title').textContent).toBe(' The Great Gatsby ')
+    })
+
+    // fireEvent.click(isbnButton)
+
+    fireEvent.click(titleButton)
+
+    expect(getByTestId('count').textContent).toBe('2')
+
+    rerender(<TestComponent />)
+    await waitFor(() => {
+      expect(getByTestId('title').textContent).toBe(' updated ')
     })
   })
 })

@@ -57,6 +57,7 @@ export class BaseResource<T extends DefaultObject> {
     const updatedValue = await this.cacheServiceResource.update(id, data)
 
     if (updatedValue) {
+      console.log(updatedValue)
       UpdateValueInStore({
         payload: updatedValue,
         store: this.store,
