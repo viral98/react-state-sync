@@ -6,11 +6,11 @@ import React, { useState, useEffect, useRef } from 'react'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { useOrchestrated } = require('../hooks/useOrchestrated')
 
-interface TestComponentProps {
-  selectedValues: { title: string }[]
+interface ChildComponentProps {
+  selectedValues: string[]
 }
 
-function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
+function ChildComponent({ selectedValues }: ChildComponentProps): JSX.Element {
   const count = useRef(1)
 
   useEffect(() => {
@@ -20,14 +20,31 @@ function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
   return (
     <React.Fragment>
       <div data-testid="count">{count.current}</div>
-      <div data-testid="title"> {selectedValues[0]?.title} </div>
+      <div data-testid="title"> {selectedValues[0]} </div>
     </React.Fragment>
   )
 }
 
-function TestComponent() {
-  const [mySelectedValues, setMySelectedValues] = useState([] as { title: string }[])
+function ParentComponent() {
+  const [selectedBooks, setSelectedBooks] = useState<string[]>([])
 
+  const setBooksCallBack = (titles: string[]) => {
+    setSelectedBooks(titles)
+  }
+
+  return (
+    <React.Fragment>
+      <TestComponent setBooksCallBack={setBooksCallBack} />
+      <ChildComponent selectedValues={selectedBooks} />
+    </React.Fragment>
+  )
+}
+
+interface TestComponentProps {
+  setBooksCallBack: (titles: string[]) => void
+}
+
+function TestComponent({ setBooksCallBack }: TestComponentProps) {
   // @ts-ignore
   const bookResource = useOrchestrated<Book>({
     pathName: 'https://react-state-sync-serverless.vercel.app/api/books'
@@ -35,9 +52,9 @@ function TestComponent() {
 
   const myCustomSelector = (allBooks: Book[]) => {
     act(() => {
-      setMySelectedValues(
+      setBooksCallBack(
         allBooks.map((book) => {
-          return { title: book.title as string }
+          return book.title as string
         })
       )
     })
@@ -53,6 +70,7 @@ function TestComponent() {
 
   useEffect(() => {
     bookResource?.getValues(myCustomSelector)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookResource])
 
   const callISBNUpdate = async () => {
@@ -67,7 +85,6 @@ function TestComponent() {
     <>
       <button data-testid="update-isbn" onClick={callISBNUpdate} />
       <button data-testid="update-title" onClick={callTitleUpdate} />
-      <ChildComponent selectedValues={mySelectedValues} />
     </>
   )
 }
@@ -103,31 +120,37 @@ describe('the page relying on selector', () => {
             Promise.resolve({
               data: {
                 _id: '1',
-                isbn: 'updated'
+                isbn: 'updated',
+                title: 'The Great Gatsby'
               }
             })
         })
       }
     }) as jest.Mock
 
-    const { getByTestId, rerender } = render(<TestComponent />)
+    const { getByTestId } = render(<ParentComponent />)
 
     const isbnButton = getByTestId('update-isbn')
     const titleButton = getByTestId('update-title')
 
-    expect(getByTestId('count').textContent).toBe('1')
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('1')
+    })
+
+    fireEvent.click(isbnButton)
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('1')
+    })
 
     await waitFor(() => {
       expect(getByTestId('title').textContent).toBe(' The Great Gatsby ')
     })
 
-    // fireEvent.click(isbnButton)
-
     fireEvent.click(titleButton)
 
-    expect(getByTestId('count').textContent).toBe('2')
-
-    rerender(<TestComponent />)
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('2')
+    })
     await waitFor(() => {
       expect(getByTestId('title').textContent).toBe(' updated ')
     })
