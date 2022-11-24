@@ -1,46 +1,60 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Book } from '../types/books'
-import { render, renderHook, waitFor } from '@testing-library/react'
-import { ActionTypes, PutAllValuesInStore, UpdateValueInStore } from '../actions/BaseActions'
+import { render, waitFor, act, fireEvent } from '@testing-library/react'
 import React, { useState, useEffect, useRef } from 'react'
-import { act } from 'react-dom/test-utils'
-import ReactDOM from 'react-dom'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { useOrchestrated } = require('../hooks/useOrchestrated')
 
-interface TestComponentProps {
-  selectedValues: Partial<Book[]>
+interface ChildComponentProps {
+  selectedValues: string[]
 }
 
-function ChildComponent({ selectedValues }: TestComponentProps): JSX.Element {
+function ChildComponent({ selectedValues }: ChildComponentProps): JSX.Element {
   const count = useRef(1)
 
   useEffect(() => {
     count.current += 1
   }, [])
 
-  console.log(selectedValues)
-
   return (
     <React.Fragment>
       <div data-testid="count">{count.current}</div>
-      <div data-testid="title"> {selectedValues[0]?.title} </div>
+      <div data-testid="title"> {selectedValues[0]} </div>
     </React.Fragment>
   )
 }
 
-function TestComponent() {
-  const [mySelectedValues, setMySelectedValues] = useState([] as { title: string }[])
+function ParentComponent() {
+  const [selectedBooks, setSelectedBooks] = useState<string[]>([])
 
+  const setBooksCallBack = (titles: string[]) => {
+    setSelectedBooks(titles)
+  }
+
+  return (
+    <React.Fragment>
+      <TestComponent setBooksCallBack={setBooksCallBack} />
+      <ChildComponent selectedValues={selectedBooks} />
+    </React.Fragment>
+  )
+}
+
+interface TestComponentProps {
+  setBooksCallBack: (titles: string[]) => void
+}
+
+function TestComponent({ setBooksCallBack }: TestComponentProps) {
+  // @ts-ignore
   const bookResource = useOrchestrated<Book>({
     pathName: 'https://react-state-sync-serverless.vercel.app/api/books'
   })
 
   const myCustomSelector = (allBooks: Book[]) => {
     act(() => {
-      setMySelectedValues(
+      setBooksCallBack(
         allBooks.map((book) => {
-          return { title: book.title as string }
+          return book.title as string
         })
       )
     })
@@ -48,9 +62,7 @@ function TestComponent() {
 
   useEffect(() => {
     async function fetchBooks() {
-      await act(async () => {
-        await bookResource.getAll()
-      })
+      await bookResource.getAll()
     }
 
     fetchBooks()
@@ -58,45 +70,89 @@ function TestComponent() {
 
   useEffect(() => {
     bookResource?.getValues(myCustomSelector)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookResource])
 
-  const callISBNUpdate = () => {
-    bookResource.update({ _id: '1', isbn: 'updated' })
+  const callISBNUpdate = async () => {
+    await bookResource.put(2, { _id: '2', isbn: 'updated' })
   }
 
-  const callTitleUpdate = () => {
-    bookResource.update({ _id: '1', title: 'updated' })
+  const callTitleUpdate = async () => {
+    await bookResource.put(1, { _id: '1', title: 'updated' })
   }
 
   return (
     <>
-      <ChildComponent selectedValues={mySelectedValues} />
+      <button data-testid="update-isbn" onClick={callISBNUpdate} />
+      <button data-testid="update-title" onClick={callTitleUpdate} />
     </>
   )
 }
 
 describe('the page relying on selector', () => {
   it('Re-renders only once', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () =>
-          Promise.resolve({
-            data: [
-              {
+    global.fetch = jest.fn((url: string) => {
+      if (url === 'https://react-state-sync-serverless.vercel.app/api/books') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  title: 'The Great Gatsby'
+                }
+              ]
+            })
+        })
+      } else if (url === 'https://react-state-sync-serverless.vercel.app/api/books/1') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
                 _id: '1',
+                title: 'updated'
+              }
+            })
+        })
+      } else {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
+                _id: '1',
+                isbn: 'updated',
                 title: 'The Great Gatsby'
               }
-            ]
-          })
-      })
-    ) as jest.Mock
+            })
+        })
+      }
+    }) as jest.Mock
 
-    const { getByTestId } = render(<TestComponent />)
+    const { getByTestId } = render(<ParentComponent />)
 
-    expect(getByTestId('count').textContent).toBe('1')
+    const isbnButton = getByTestId('update-isbn')
+    const titleButton = getByTestId('update-title')
+
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('1')
+    })
+
+    fireEvent.click(isbnButton)
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('1')
+    })
 
     await waitFor(() => {
       expect(getByTestId('title').textContent).toBe(' The Great Gatsby ')
+    })
+
+    fireEvent.click(titleButton)
+
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('2')
+    })
+    await waitFor(() => {
+      expect(getByTestId('title').textContent).toBe(' updated ')
     })
   })
 })

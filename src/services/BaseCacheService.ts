@@ -20,14 +20,12 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     const data = this.getAll({ query, param })
 
     if (data) {
-      console.log('Turn around, local data is fresh', data)
       return data
     } else {
-      const serverData = await (await this.api(this.pathName, param ?? {})).json()
+      const serverData = await (await this.api(query, param ?? {})).json()
 
       this.set(serverData, query, param)
 
-      console.log('Hitting the backend server', serverData)
       return serverData.data
     }
   }
@@ -47,6 +45,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
 
   public async update(id: string, data: T, param?: ApiQueryParams) {
     const query = this.pathName + '/' + id
+
     const requestOptions = {
       method: 'PUT',
       body: JSON.stringify(data),
