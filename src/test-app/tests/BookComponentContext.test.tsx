@@ -1,40 +1,46 @@
+import { render } from '@testing-library/react'
+import BookComponentContainer from '../components/BookComponentContainer'
 
-import { render } from '@testing-library/react';
-import React from 'react';
-import { BookContext } from '../store/BookContext';
-import BookComponentContainer from '../components/BookComponentContainer';
-import { dummyBookResponse } from '../../hooks/testUtil';
-import renderer from 'react-test-renderer';
+describe('Context API calls', () => {
+  it('Calls the API 1000 times', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ test: 100 })
+      })
+    ) as jest.Mock
 
+    for (let i = 0; i < 1000; i++) {
+      render(<BookComponentContainer />)
+    }
 
-function TestComponent() {
-  return (
-    <>
-        <BookContext.Provider value={dummyBookResponse}>
-            <BookComponentContainer />
-        </BookContext.Provider>
-    </>
-  )
-}
+    expect(fetch).toHaveBeenCalledTimes(1000)
+  })
 
-describe('Test', () => {
+  it('Calls the API 100 times', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ test: 100 })
+      })
+    ) as jest.Mock
 
-  it('renders the component correctly.', () => {
-    const { getByTestId } = render(<TestComponent />);
+    for (let i = 0; i < 100; i++) {
+      render(<BookComponentContainer />)
+    }
 
-    expect(getByTestId('count').textContent).toBe('2');
+    expect(fetch).toHaveBeenCalledTimes(100)
+  })
 
-    const tree = renderer
-      .create(<TestComponent />)
-      .toJSON();
-    expect(tree).toMatchSnapshot();
-  });
+  it('Calls the API 10 times', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        json: () => Promise.resolve({ test: 100 })
+      })
+    ) as jest.Mock
 
-  it('renders the component correctly.', () => {
-    const tree = renderer
-      .create(<TestComponent />)
-      .toJSON();
-    expect(tree).toMatchSnapshot();
-  });
+    for (let i = 0; i < 10; i++) {
+      render(<BookComponentContainer />)
+    }
 
-});
+    expect(fetch).toHaveBeenCalledTimes(10)
+  })
+})

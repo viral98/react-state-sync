@@ -1,27 +1,25 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Book } from '../../types/books';
-import { BookContext } from '../store/BookContext';
-import BookComponentContext from './BookComponentContext';
+import React, { useEffect, useState } from 'react'
+
+import BookContext from './BookContext'
 
 function BookComponentContainer(): JSX.Element {
-  const count = useRef(1)
+  const [title, setTitle] = useState<string[]>([])
 
-  const [title, setTitle] = useState<string[]>([]);
-  const books = useContext(BookContext);
+  const API = 'https://react-state-sync-serverless.vercel.app/api/books'
+  const fetchBooks = () => {
+    fetch(API).then((res) => res.json())
+  }
 
   useEffect(() => {
-    count.current += 1
+    fetchBooks()
+    setTitle(['abc', 'bca'])
   }, [])
 
-  useEffect(() => {
-    if(books && Array.isArray(books)){
-      setTitle(books.map((book) => book.title as string));
-    }
-  }, []);
-
   return (
-    <BookComponentContext selectedValues={title[0]}/>
+    <React.Fragment>
+      <BookContext.Provider value={{ Title: title[0] }}>{title}</BookContext.Provider>
+    </React.Fragment>
   )
 }
 
-export default BookComponentContainer;
+export default BookComponentContainer
