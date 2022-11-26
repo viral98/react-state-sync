@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
+import { useBookStore } from '../store/BookContext';
 
-interface TestComponentProps {
-  selectedValues: Partial<string>
-}
+function BookTitle(): JSX.Element {
 
-function BookComponentContext({ selectedValues }: TestComponentProps): JSX.Element {
+  const [state] = useBookStore();
+
   const count = useRef(1)
 
   useEffect(() => {
@@ -14,9 +14,9 @@ function BookComponentContext({ selectedValues }: TestComponentProps): JSX.Eleme
   return (
     <React.Fragment>
       <div data-testid="count">{count.current}</div>
-      <div data-testid="title"> {selectedValues} </div>
+      <div data-testid="title"> {state[0].title} </div>
     </React.Fragment>
   )
 }
 
-export default BookComponentContext;
+export default BookTitle;

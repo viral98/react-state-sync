@@ -10,7 +10,7 @@ export enum ActionTypes {
   GET_ALL = 'GET_ALL',
   UPDATE = 'UPDATE',
   POST = 'POST',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 interface UpdateAction<T> extends Action<ActionTypes.UPDATE> {
