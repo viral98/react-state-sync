@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { dummyBookResponse } from '../../hooks/testUtil';
 import { Book } from '../../types/books';
-import { BookStoreProvider, useBookStore } from '../store/BookContext';
-import { AddANewValueInStore, bookReducer } from '../store/bookReducer';
+import { BookStoreProvider } from '../store/BookContext';
+import { bookReducer } from '../store/bookReducer';
 import BookTitle from './BookTitle';
 
 function BookComponentContainer(): JSX.Element {
