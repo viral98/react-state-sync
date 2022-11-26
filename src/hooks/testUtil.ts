@@ -236,10 +236,16 @@ export const dummyBookResponse = [
   }
 ] as StoreState<Book[]>
 export const updatedValue = {
-  _id: '636ab773f8222d43fd1cd102',
+  _id: '636ab773f8222d43fd1cd100',
   title: 'Web Dev 1',
   isbn: '234324asd',
   author: 'Web Dev 1',
   description: 'Web Dev 1',
   updated_date: '2022-11-08T20:09:23.958Z'
+}
+
+export const createValue = {
+  _id: '636ab773f8222d43fd1cd100',
+  title: 'Web Dev 1',
+  isbn: '234324asd'
 }
