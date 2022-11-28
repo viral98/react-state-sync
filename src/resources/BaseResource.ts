@@ -7,6 +7,7 @@ import {
 } from '../actions/BaseActions'
 import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheService } from '../services/BaseCacheService'
+import { ApiQueryParams } from '../types/api'
 
 export class BaseResource<T extends DefaultObject> {
   private store
@@ -19,8 +20,8 @@ export class BaseResource<T extends DefaultObject> {
     this.cacheServiceResource = cacheResource
   }
 
-  public getAll = async () => {
-    const resp = await this.cacheServiceResource.getAllValues()
+  public getAll = async (param?: ApiQueryParams) => {
+    const resp = await this.cacheServiceResource.getAllValues(param)
 
     if (resp) {
       PutAllValuesInStore({
