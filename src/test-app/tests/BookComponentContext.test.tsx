@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { dummyBookResponse, updatedValue } from '../../hooks/testUtil'
 import { useBooks } from '../hooks/useBooks'
 import { renderHook } from '@testing-library/react'
@@ -9,11 +9,46 @@ import BookComponentContainer from '../components/BookComponentContainer'
 
 describe('Context API calls', () => {
   it('Calls the API 1000 times', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({ test: 100 })
-      })
-    ) as jest.Mock
+    global.fetch = jest.fn((url: string) => {
+      if (url === 'https://react-state-sync-serverless.vercel.app/api/books') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  title: 'The Great Gatsby'
+                }
+              ]
+            })
+        })
+      } else if (url === 'https://react-state-sync-serverless.vercel.app/api/books/1') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  title: 'updated'
+                }
+              ]
+            })
+        })
+      } else {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  isbn: 'updated',
+                  title: 'The Great Gatsby'
+                }
+              ]
+            })
+        })
+      }
+    }) as jest.Mock
 
     for (let i = 0; i < NUMBER_OF_RUNS; i++) {
       render(<BookComponentContainer />)
@@ -82,5 +117,61 @@ describe('Context API calls', () => {
         })
       }
     })
+  })
+})
+
+describe('the page relying on selector', () => {
+  it('Re-renders only once', async () => {
+    global.fetch = jest.fn((url: string) => {
+      if (url === 'https://react-state-sync-serverless.vercel.app/api/books') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: [
+                {
+                  _id: '1',
+                  title: 'The Great Gatsby'
+                }
+              ]
+            })
+        })
+      } else if (url === 'https://react-state-sync-serverless.vercel.app/api/books/1') {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
+                _id: '1',
+                title: 'updated'
+              }
+            })
+        })
+      } else {
+        return Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              data: {
+                _id: '1',
+                isbn: 'updated',
+                title: 'The Great Gatsby'
+              }
+            })
+        })
+      }
+    }) as jest.Mock
+    const { getByTestId } = render(<BookComponentContainer />)
+
+    const isbnButton = getByTestId('update-isbn')
+    const titleButton = getByTestId('update-title')
+
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('1')
+    })
+
+    fireEvent.click(isbnButton)
+    await waitFor(() => {
+      expect(getByTestId('count').textContent).toBe('2')
+    })
+
+    fireEvent.click(titleButton)
   })
 })
