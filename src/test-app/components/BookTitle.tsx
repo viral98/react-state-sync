@@ -1,10 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import { useBookStore } from '../store/BookContext';
+import React, { useEffect, useRef } from 'react'
+import { useBookStore } from '../store/BookContext'
 
 function BookTitle(): JSX.Element {
-
-  const [state] = useBookStore();
-
+  const [state] = useBookStore()
   const count = useRef(1)
 
   useEffect(() => {
@@ -19,4 +17,4 @@ function BookTitle(): JSX.Element {
   )
 }
 
-export default BookTitle;
+export default BookTitle

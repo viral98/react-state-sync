@@ -1,7 +1,7 @@
-import { ActionTypes } from "../../actions/BaseActions";
-import { CreateStoreReturn, DefaultObject, StoreState } from "../../createStore";
-import { Action } from "../../types/action";
-import { Book } from "../../types/books";
+import { ActionTypes } from '../../actions/BaseActions'
+import { DefaultObject, StoreState } from '../../createStore'
+import { Action } from '../../types/action'
+import { Book } from '../../types/books'
 
 interface UpdateAction<Book> extends Action<ActionTypes.UPDATE> {
   payload: StoreState<Book>
@@ -17,41 +17,59 @@ interface PostAction<Book> extends Action<ActionTypes.POST> {
 }
 
 interface ActionReturnType {
-    type: string,
-    payload: StoreState<Book>
+  type: string
+  payload: StoreState<Book>
 }
 
-export type BaseActions<Book> = UpdateAction<Book> | DeleteAction<Book> | GetAllAction<Book> | PostAction<Book>
+export type BaseActions<Book> =
+  | UpdateAction<Book>
+  | DeleteAction<Book>
+  | GetAllAction<Book>
+  | PostAction<Book>
 
-export function UpdateValueInStore<Book extends DefaultObject>({payload} : {payload: StoreState<Book>} ): ActionReturnType {
-  return({
+export function UpdateValueInStore<Book extends DefaultObject>({
+  payload
+}: {
+  payload: StoreState<Book>
+}): ActionReturnType {
+  return {
     type: ActionTypes.UPDATE,
-    payload,
-  });
+    payload
+  }
 }
 
-export function DeleteValueFromStore<Book extends DefaultObject>({ payload }: {payload: StoreState<Book>}) : ActionReturnType {
-  return({
+export function DeleteValueFromStore<Book extends DefaultObject>({
+  payload
+}: {
+  payload: StoreState<Book>
+}): ActionReturnType {
+  return {
     type: ActionTypes.DELETE,
-    payload,
-  });
+    payload
+  }
 }
 
-export function PutAllValuesInStore<Book extends DefaultObject>({payload}: {payload: StoreState<Book>}) : ActionReturnType {
-  return({
+export function PutAllValuesInStore<Book extends DefaultObject>({
+  payload
+}: {
+  payload: StoreState<Book>
+}): ActionReturnType {
+  return {
     type: ActionTypes.GET_ALL,
-    payload,
-  });
+    payload
+  }
 }
 
-export function AddANewValueInStore<Book extends DefaultObject>({payload}: {payload: StoreState<Book> } ): ActionReturnType {
-  return({
+export function AddANewValueInStore<Book extends DefaultObject>({
+  payload
+}: {
+  payload: StoreState<Book>
+}): ActionReturnType {
+  return {
     type: ActionTypes.POST,
-    payload,
-  });
+    payload
+  }
 }
-
-
 
 export function bookReducer<Book extends DefaultObject>(
   state: StoreState<Book>[],
@@ -59,7 +77,7 @@ export function bookReducer<Book extends DefaultObject>(
 ): StoreState<Book>[] {
   switch (action.type) {
     case ActionTypes.GET_ALL:
-      return state;
+      return state
 
     case ActionTypes.UPDATE:
       return state.map((stateItem: StoreState<Book>) => {
@@ -81,4 +99,3 @@ export function bookReducer<Book extends DefaultObject>(
   }
   return state
 }
-
