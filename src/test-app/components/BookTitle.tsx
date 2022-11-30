@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react'
-import { useBooks } from '../hooks/useBooks'
+import React, { useContext, useEffect, useRef } from 'react'
+import { BookStore } from '../store/BookContext'
 
 function BookTitle(): JSX.Element {
-  const { data } = useBooks()
   const count = useRef(1)
+  const contextValues = useContext(BookStore)
 
   useEffect(() => {
     count.current += 1
@@ -12,7 +12,7 @@ function BookTitle(): JSX.Element {
   return (
     <React.Fragment>
       <div data-testid="count">{count.current}</div>
-      <div data-testid="title"> {data && data.length > 0 ? data[0].title : 'Loading'} </div>
+      <div data-testid="title">{contextValues[0].title}</div>
     </React.Fragment>
   )
 }
