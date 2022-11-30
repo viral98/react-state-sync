@@ -10,6 +10,7 @@ import {
   UpdateValueInStore
 } from '../actions/BaseActions'
 import { createValue, dummyBookResponse, updatedValue } from './testUtil'
+import { NUMBER_OF_RUNS } from '../tests/utils'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { useOrchestrated } = require('../hooks/useOrchestrated')
 
@@ -24,7 +25,7 @@ describe('the useOrchestrated hook', () => {
     // @ts-ignore
     const { result } = renderHook(() => useOrchestrated<Book>({ pathName: 'books' }))
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < NUMBER_OF_RUNS; i++) {
       await result.current?.getAll()
     }
 
@@ -49,7 +50,7 @@ describe('the useOrchestrated hook', () => {
         type: ActionTypes.GET_ALL
       })
 
-      for (let i = 0; i < 10000; i++) {
+      for (let i = 0; i < NUMBER_OF_RUNS; i++) {
         UpdateValueInStore({
           payload: updatedValue,
           store: store,
@@ -79,7 +80,7 @@ describe('the useOrchestrated hook', () => {
       })
     }
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < NUMBER_OF_RUNS; i++) {
       AddANewValueInStore({
         payload: createValue,
         store: store,

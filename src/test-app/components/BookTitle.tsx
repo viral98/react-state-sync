@@ -12,7 +12,7 @@ function BookTitle(): JSX.Element {
   return (
     <React.Fragment>
       <div data-testid="count">{count.current}</div>
-      <div data-testid="title">{contextValues[0].title}</div>
+      <div data-testid="title">{contextValues.length > 0 && contextValues[0].title}</div>
     </React.Fragment>
   )
 }

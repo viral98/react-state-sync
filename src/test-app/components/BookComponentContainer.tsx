@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { act } from 'react-dom/test-utils'
 import { Book } from '../../types/books'
 import { BookStoreProvider } from '../store/BookContext'
 import { bookReducer } from '../store/bookReducer'
@@ -11,7 +12,9 @@ function BookComponentContainer(): JSX.Element {
     fetch('https://react-state-sync-serverless.vercel.app/api/books')
       .then((response) => response.json())
       .then((books: Book[]) => {
-        setBooks(books)
+        act(() => {
+          setBooks(books)
+        })
       })
   }, [])
 

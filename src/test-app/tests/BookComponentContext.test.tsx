@@ -1,12 +1,11 @@
 import { render } from '@testing-library/react'
 import { dummyBookResponse, updatedValue } from '../../hooks/testUtil'
-import BookTitle from '../components/BookTitle'
 import { useBooks } from '../hooks/useBooks'
-import { BookStore } from '../store/BookContext'
-import { PutAllValuesInStore, UpdateValueInStore } from '../store/bookReducer'
 import { renderHook } from '@testing-library/react'
 import { ActionTypes } from '../../actions/BaseActions'
 import { act } from 'react-dom/test-utils'
+import { NUMBER_OF_RUNS } from '../../tests/utils'
+import BookComponentContainer from '../components/BookComponentContainer'
 
 describe('Context API calls', () => {
   it('Calls the API 1000 times', async () => {
@@ -16,11 +15,11 @@ describe('Context API calls', () => {
       })
     ) as jest.Mock
 
-    for (let i = 0; i < 1000; i++) {
-      render(<BookTitle />)
+    for (let i = 0; i < NUMBER_OF_RUNS; i++) {
+      render(<BookComponentContainer />)
     }
 
-    expect(fetch).toHaveBeenCalledTimes(1000)
+    expect(fetch).toHaveBeenCalledTimes(NUMBER_OF_RUNS)
   })
 
   it('Can perform multiple dispatches', async () => {
@@ -30,19 +29,23 @@ describe('Context API calls', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const store = BookStore
+    const store = renderHook(() => useBooks())
 
-    if (store) {
-      PutAllValuesInStore({
-        payload: dummyBookResponse
-      })
-
-      for (let i = 0; i < 10000; i++) {
-        UpdateValueInStore({
-          payload: updatedValue
+    act(() => {
+      if (store) {
+        store.result.current.bookDispatch({
+          type: ActionTypes.GET_ALL,
+          payload: dummyBookResponse
         })
+
+        for (let i = 0; i < NUMBER_OF_RUNS; i++) {
+          store.result.current.bookDispatch({
+            type: ActionTypes.UPDATE,
+            payload: updatedValue
+          })
+        }
       }
-    }
+    })
   })
 
   it('Can handle multiple store manipulations', async () => {
@@ -55,8 +58,6 @@ describe('Context API calls', () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const store = renderHook(() => useBooks())
 
-    store.result.current
-
     act(() => {
       if (store) {
         store.result.current.bookDispatch({
@@ -65,7 +66,7 @@ describe('Context API calls', () => {
         })
       }
 
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < NUMBER_OF_RUNS; i++) {
         store.result.current.bookDispatch({
           type: ActionTypes.POST,
           payload: dummyBookResponse
