@@ -1,13 +1,12 @@
 import { render } from '@testing-library/react'
-import { createValue, dummyBookResponse, updatedValue } from '../../hooks/testUtil'
-import BookComponentContainer from '../components/BookComponentContainer'
+import { dummyBookResponse, updatedValue } from '../../hooks/testUtil'
+import BookTitle from '../components/BookTitle'
+import { useBooks } from '../hooks/useBooks'
 import { BookStore } from '../store/BookContext'
-import {
-  AddANewValueInStore,
-  DeleteValueFromStore,
-  PutAllValuesInStore,
-  UpdateValueInStore
-} from '../store/bookReducer'
+import { PutAllValuesInStore, UpdateValueInStore } from '../store/bookReducer'
+import { renderHook } from '@testing-library/react'
+import { ActionTypes } from '../../actions/BaseActions'
+import { act } from 'react-dom/test-utils'
 
 describe('Context API calls', () => {
   it('Calls the API 1000 times', async () => {
@@ -18,7 +17,7 @@ describe('Context API calls', () => {
     ) as jest.Mock
 
     for (let i = 0; i < 1000; i++) {
-      render(<BookComponentContainer />)
+      render(<BookTitle />)
     }
 
     expect(fetch).toHaveBeenCalledTimes(1000)
@@ -54,26 +53,33 @@ describe('Context API calls', () => {
     // @ts-ignore
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const store = BookStore
+    const store = renderHook(() => useBooks())
 
-    if (store) {
-      PutAllValuesInStore({
-        payload: dummyBookResponse
-      })
-    }
+    store.result.current
 
-    for (let i = 0; i < 10000; i++) {
-      AddANewValueInStore({
-        payload: createValue
-      })
+    act(() => {
+      if (store) {
+        store.result.current.bookDispatch({
+          type: ActionTypes.GET_ALL,
+          payload: dummyBookResponse
+        })
+      }
 
-      UpdateValueInStore({
-        payload: updatedValue
-      })
+      for (let i = 0; i < 1000; i++) {
+        store.result.current.bookDispatch({
+          type: ActionTypes.POST,
+          payload: dummyBookResponse
+        })
 
-      DeleteValueFromStore({
-        payload: updatedValue
-      })
-    }
+        store.result.current.bookDispatch({
+          type: ActionTypes.UPDATE,
+          payload: updatedValue
+        })
+        store.result.current.bookDispatch({
+          type: ActionTypes.DELETE,
+          payload: updatedValue
+        })
+      }
+    })
   })
 })
