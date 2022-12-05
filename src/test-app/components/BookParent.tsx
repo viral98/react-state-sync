@@ -24,9 +24,7 @@ export default function BookParent(): JSX.Element {
 
     const book = (await data.json()).data
 
-    act(() => {
-      if (dispatch) dispatch({ type: ActionTypes.UPDATE, payload: book })
-    })
+    if (dispatch) dispatch({ type: ActionTypes.UPDATE, payload: book })
   }
 
   const callTitleUpdate = async () => {
