@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios'
 import { StoreState } from '../createStore'
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
@@ -7,7 +8,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   private api
   private pathName
 
-  constructor(pathName: string, api: (input: RequestInfo, init: RequestInit) => Promise<Response>) {
+  constructor(pathName: string, api: AxiosInstance) {
     super(pathName)
 
     this.pathName = pathName
@@ -15,16 +16,20 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     this.api = api
   }
 
-  public async getAllValues(param?: ApiQueryParams): Promise<StoreState<T[]>> {
+  public async getAllValues(param?: ApiQueryParams, force?: boolean): Promise<StoreState<T[]>> {
     const query = this.pathName
     const data = this.getAll({ query, param })
 
-    if (data) {
+    if (data && !force) {
       return data
     } else {
-      const serverData = await (await this.api(query, param ?? {})).json()
+      const serverData = await this.api.request<StoreState<T[]>>({
+        method: 'GET',
+        url: query,
+        params: param
+      })
 
-      this.set(serverData, query, param)
+      this.set(serverData.data, query, param)
 
       return serverData.data
     }
@@ -37,23 +42,29 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     if (data) {
       return data
     } else {
-      const serverData = await (await this.api(this.pathName + '/' + id, param ?? {})).json()
+      const serverData = await this.api.request<StoreState<T>>({
+        method: 'GET',
+        url: query + '/' + id,
+        params: param
+      })
 
-      return serverData
+      return serverData.data
     }
   }
 
   public async update(id: string, data: T, param?: ApiQueryParams) {
     const query = this.pathName + '/' + id
 
-    const requestOptions = {
+    const putData = await this.api.request<StoreState<T>>({
       method: 'PUT',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
-    }
-    const putData = await (await this.api(query, requestOptions)).json()
+      url: query,
+      data: {
+        attributes: data
+      },
+      params: param
+    })
 
-    this.put(id, this.pathName, putData, param)
+    this.put(id, this.pathName, putData.data, param)
 
     return putData.data
   }
@@ -61,20 +72,22 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
   public async delete(id: string, param?: ApiQueryParams) {
     const query = this.pathName
 
-    fetch(query + '/' + id, { method: 'DELETE' })
+    await this.api.request({
+      method: 'DELETE',
+      url: `${query}/${id}`,
+      data: param
+    })
     this.deleteLocal(id, query, param)
   }
 
   public async create(data: Partial<T>): Promise<T> {
     const query = this.pathName
 
-    const requestOptions = {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
-    }
-
-    const returnData = await (await this.api(query, requestOptions)).json()
+    const returnData = await this.api.request<StoreState<T>>({
+      method: 'post',
+      url: query,
+      data: data
+    })
 
     this.post(returnData.data, query)
 

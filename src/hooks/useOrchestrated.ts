@@ -10,13 +10,7 @@ export function useOrchestrated<T extends DefaultObject>({ pathName }: { pathNam
       localStorage.clear()
     }
 
-    const concreteApi = api({})
-
-    if (!concreteApi) {
-      return null
-    }
-
-    const concreteCacheService = new BaseCacheService<T>(pathName, concreteApi)
+    const concreteCacheService = new BaseCacheService<T>(pathName, api)
     const concreteBaseResource = new BaseResource<T>(concreteCacheService, pathName)
 
     return concreteBaseResource

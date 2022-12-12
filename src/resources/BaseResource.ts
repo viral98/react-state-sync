@@ -7,7 +7,7 @@ import {
 } from '../actions/BaseActions'
 import createStore, { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheService } from '../services/BaseCacheService'
-import { ApiQueryParams } from '../types/api'
+import { ApiQueryParams, ApiResponse } from '../types/api'
 
 export class BaseResource<T extends DefaultObject> {
   private store
@@ -20,8 +20,8 @@ export class BaseResource<T extends DefaultObject> {
     this.cacheServiceResource = cacheResource
   }
 
-  public getAll = async (param?: ApiQueryParams) => {
-    const resp = await this.cacheServiceResource.getAllValues(param)
+  public getAll = async (param?: ApiQueryParams, force?: boolean) => {
+    const resp = await this.cacheServiceResource.getAllValues(param, force)
 
     if (resp) {
       PutAllValuesInStore({
@@ -32,7 +32,7 @@ export class BaseResource<T extends DefaultObject> {
       })
     }
 
-    return this.store.getState()
+    return this.store.getState() as unknown as ApiResponse<StoreState<T[]>>
   }
 
   public post = async (data: Partial<T>) => {
@@ -51,7 +51,7 @@ export class BaseResource<T extends DefaultObject> {
   public get = async (id: string) => {
     const record = await this.cacheServiceResource.getSingleValue(id)
 
-    return record
+    return record as unknown as ApiResponse<StoreState<T>>
   }
 
   public put = async (id: string, data: T) => {

@@ -1,31 +1,19 @@
-interface FetchProps {
-  header?: string
-}
+import axios from 'axios'
+import Qs from 'qs'
 
-const api = ({ header }: FetchProps) => {
-  if (typeof window === 'undefined') {
-    return
+const api = axios.create()
+
+api.defaults.withCredentials = false
+
+api.interceptors.request.use((config) => {
+  config.paramsSerializer = (params: any) => {
+    return Qs.stringify(params, {
+      arrayFormat: 'brackets',
+      encode: false
+    })
   }
 
-  const { fetch: originalFetch } = window
-
-  const updatedFetch = async (input: RequestInfo, init: RequestInit) => {
-    if (header) {
-      init.headers = {
-        ...init.headers,
-        'Content-Type': 'application/vnd.api+json',
-        Accept: 'application/vnd.api+json',
-        Authorization: 'Bearer ' + header
-      }
-    }
-
-    // request interceptor here
-    const response = await originalFetch(input, init)
-
-    return response
-  }
-
-  return updatedFetch
-}
+  return config
+})
 
 export default api
