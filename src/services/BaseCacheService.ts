@@ -35,7 +35,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
   }
 
-  public async getSingleValue(id: string, param?: ApiQueryParams): Promise<T> {
+  public async getSingleValue(id: string, param?: ApiQueryParams): Promise<StoreState<T>> {
     const query = this.pathName
     const data = this.get({ id, param, query })
 
@@ -52,7 +52,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     }
   }
 
-  public async update(id: string, data: T, param?: ApiQueryParams) {
+  public async update(id: string, data: T, param?: ApiQueryParams): Promise<StoreState<T>> {
     const query = this.pathName + '/' + id
 
     const putData = await this.api.request<StoreState<T>>({
@@ -80,7 +80,7 @@ export class BaseCacheService<T> extends BaseCacheResource<T> {
     this.deleteLocal(id, query, param)
   }
 
-  public async create(data: Partial<T>): Promise<T> {
+  public async create(data: Partial<T>): Promise<StoreState<T>> {
     const query = this.pathName
 
     const returnData = await this.api.request<StoreState<T>>({

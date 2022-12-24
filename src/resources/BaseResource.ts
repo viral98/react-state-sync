@@ -51,7 +51,7 @@ export class BaseResource<T extends DefaultObject> {
   public get = async (id: string) => {
     const record = await this.cacheServiceResource.getSingleValue(id)
 
-    return record as unknown as ApiResponse<StoreState<T>>
+    return record
   }
 
   public put = async (id: string, data: T) => {
@@ -65,6 +65,8 @@ export class BaseResource<T extends DefaultObject> {
         type: ActionTypes.UPDATE
       })
     }
+
+    return updatedValue
   }
 
   public delete = async (id: string) => {
