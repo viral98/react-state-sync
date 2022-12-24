@@ -21,11 +21,13 @@ export function useOrchestrated<T extends DefaultObject>({ pathName, headers }: 
     api.defaults.withCredentials = Boolean(headers)
 
     api.interceptors.request.use((config) => {
-      config.paramsSerializer = (params: any) => {
-        return Qs.stringify(params, {
-          arrayFormat: 'brackets',
-          encode: false
-        })
+      config.paramsSerializer = {
+        encode: (params) => {
+          return Qs.stringify(params, {
+            arrayFormat: 'brackets',
+            encode: false
+          })
+        }
       }
 
       config.headers = headers

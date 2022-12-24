@@ -14,7 +14,8 @@
     "jsx": "preserve",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "declaration": true
+    "declaration": true,
+    "outDir": "lib"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/tests/reRenderPerf.test.jsx"],
   "exclude": ["node_modules"]
