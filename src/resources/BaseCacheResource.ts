@@ -1,5 +1,6 @@
 import md5 from 'md5'
-import { StoreState } from '../createStore'
+import createServerStore from '../createServerStore'
+import { DefaultObject, StoreState } from '../createStore'
 import { ApiQueryParams } from '../types/api'
 import { generateCacheString } from '../utils/cache'
 
@@ -16,11 +17,13 @@ export interface GetInterface extends GetAllInterface {
   id?: string
 }
 
-export abstract class BaseCacheResource<T> {
+export abstract class BaseCacheResource<T extends DefaultObject> {
   protected path: string
-  private updatedAt = 0
   private ttl: number
+  private store
+
   constructor(path: string) {
+    this.store = createServerStore<BaseCacheResourceInterface<T>>({})
     this.path = path
     this.ttl = 3_600_000
   }
@@ -44,7 +47,7 @@ export abstract class BaseCacheResource<T> {
     const isFresh = data ? new Date().getTime() - currentTime < this.ttl : false
 
     if (isFresh && data) {
-      const values = JSON.parse(data).value
+      const values = data.value
 
       for (let i = 0; i < values.length; i++) {
         if (values[i]._id === id) {
@@ -58,19 +61,19 @@ export abstract class BaseCacheResource<T> {
     return null
   }
 
-  public getAll({ query, param }: GetAllInterface): StoreState<T[]> {
+  public getAll({ query, param }: GetAllInterface): StoreState<T[]> | null {
     const cacheString = generateCacheString({ query, param })
 
     const hashedKey = this.hash(cacheString)
     const localData = this.getLocalStorage(hashedKey)
 
-    return localData !== null ? JSON.parse(localData).value : null
+    return localData !== null ? localData.value : null
   }
 
-  public post(data: Partial<T>, query: string, param?: ApiQueryParams): void {
+  public post(data: T, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
-    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
+    const cachedData = this.getLocalStorage(key) ?? ''
 
     this.invalidate(key)
     if (cachedData) {
@@ -85,7 +88,7 @@ export abstract class BaseCacheResource<T> {
   public put(id: string, query: string, data: T, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
-    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
+    const cachedData = this.getLocalStorage(key)
 
     this.invalidate(key)
     if (cachedData) {
@@ -104,7 +107,7 @@ export abstract class BaseCacheResource<T> {
   public deleteLocal(id: string, query: string, param?: ApiQueryParams): void {
     const cacheString = generateCacheString({ query, param })
     const key = this.hash(cacheString)
-    const cachedData = JSON.parse(this.getLocalStorage(key) ?? '')
+    const cachedData = this.getLocalStorage(key) ?? ''
 
     this.invalidate(key)
     if (cachedData) {
@@ -112,7 +115,7 @@ export abstract class BaseCacheResource<T> {
 
       for (let i = 0; i < values.length; i++) {
         if (values[i]._id == id) {
-          cachedData.value = values.filter((value: StoreState<T[]>) => value._id !== id)
+          cachedData.value = values.filter((value) => value._id !== id) as StoreState<T[]>
         }
       }
       this.setLocalStorage(key, JSON.stringify(cachedData))
@@ -149,11 +152,7 @@ export abstract class BaseCacheResource<T> {
   }
 
   private getLocalStorage(key: string) {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(key)
-    } else {
-      return null
-    }
+    return this.store.getState()[key]
   }
 
   private addMetaData(data: StoreState<T[]>): string {
@@ -171,6 +170,6 @@ export abstract class BaseCacheResource<T> {
 
     const data = this.getLocalStorage(key)
 
-    return data ? JSON.parse(data)?.timeStamp : undefined
+    return data ? data?.timeStamp : undefined
   }
 }

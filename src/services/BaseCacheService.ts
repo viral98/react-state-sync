@@ -1,18 +1,16 @@
 import { AxiosInstance } from 'axios'
-import { StoreState } from '../createStore'
+import { DefaultObject, StoreState } from '../createStore'
 import { BaseCacheResource } from '../resources/BaseCacheResource'
 import { ApiQueryParams } from '../types/api'
 
-export class BaseCacheService<T> extends BaseCacheResource<T> {
+export class BaseCacheService<T extends DefaultObject> extends BaseCacheResource<T> {
   private data = null
   private api
   private pathName
 
   constructor(pathName: string, api: AxiosInstance) {
     super(pathName)
-
     this.pathName = pathName
-
     this.api = api
   }
 
